@@ -11,9 +11,6 @@ Protocol format detailed in comments in each Message type (see pbox-core).
 
 ### Client ###
 
-  * Send Index differences to Server on startup.
-  * Only write to Index if something has changed on startup.
-  * Usage of MessageWriter between FileSystemIndexer & FileSystemWatcher is hacky - make nicer!
   * Implement MOVED/RENAMED (deleted and added with same hash).
     * Add protocol support for this too?
   * Handle protocol acks.
@@ -28,6 +25,7 @@ Protocol format detailed in comments in each Message type (see pbox-core).
 
 ### Future Plans ###
 
+  * Delete directories that are not empty.
   * Handle large files; io.netty.handler.codec.TooLongFrameException: Adjusted frame length exceeds 104857.
   * Test across different operating systems (Linux/MacOS/Windows).
   * Add end to end encryption.

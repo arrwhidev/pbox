@@ -1,7 +1,10 @@
 package com.arrwhi.pbox.client.index;
 
+import com.arrwhi.pbox.client.index.difference.Difference;
+import com.arrwhi.pbox.client.index.difference.DifferenceType;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static junit.framework.TestCase.assertFalse;
@@ -110,5 +113,28 @@ public class IndexComparatorTest {
         assertThat(difference.getEntry().getFilePath(), equalTo("/dir1"));
         assertThat(difference.getEntry().getHash(), equalTo(""));
         assertThat(difference.getEntry().isDirectory(), equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnAnAddedDifference_whenFileIsAddedInsideDirectoryInNewIndex() throws Exception {
+        Index oldIndex = new Index("/");
+        Index newIndex = new Index("/");
+
+        oldIndex.add(new IndexEntry("dir1", "/dir1", "", Collections.emptyList()));
+        newIndex.add(new IndexEntry("dir1", "/dir1", "", Arrays.asList(
+            new IndexEntry("file1", "/dir1/file1", "hash1")
+        )));
+
+        IndexComparator comparator = new IndexComparator(oldIndex, newIndex);
+
+        assertFalse(comparator.areEqual());
+        assertThat(comparator.getDifferences().size(), equalTo(1));
+
+        Difference difference = comparator.getDifferences().get(0);
+        assertThat(difference.getType(), equalTo(DifferenceType.ADDED));
+        assertThat(difference.getEntry().getName(), equalTo("file1"));
+        assertThat(difference.getEntry().getFilePath(), equalTo("/dir1/file1"));
+        assertThat(difference.getEntry().getHash(), equalTo("hash1"));
+        assertThat(difference.getEntry().isDirectory(), equalTo(false));
     }
 }

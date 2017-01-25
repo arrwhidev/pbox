@@ -2,33 +2,25 @@ package com.arrwhi.pbox.client.filesystem;
 
 import com.arrwhi.pbox.client.index.Index;
 import com.arrwhi.pbox.client.index.IndexEntry;
-import com.arrwhi.pbox.client.io.MessageWriter;
-import com.arrwhi.pbox.msg.Message;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.*;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
-public class FileSystemIndexer extends Observable {
+public class FileSystemIndexer {
 
     private static final String DIR_HASH = "";
 
     private final Path basePath;
     private Index index;
-    private FileSystemEventToMessageAdapter adapter;
-    private MessageWriter msgWriter;
 
-    public FileSystemIndexer(Index index, FileSystemEventToMessageAdapter adapter, MessageWriter msgWriter) {
+    public FileSystemIndexer(Index index) {
         this.basePath = Paths.get(index.getRootDir());
-        this.adapter = adapter;
         this.index = index;
-        this.msgWriter = msgWriter;
     }
 
     public void buildIndex() {
@@ -57,15 +49,10 @@ public class FileSystemIndexer extends Observable {
                     e.printStackTrace();
                 }
             }
-
-            Message msg = this.adapter.adapt(file.toPath(), ENTRY_CREATE);
-            if (msg != null) {
-                msgWriter.writeMessage(msg);
-            }
         }
+
         return entries;
     }
-
 
     public Index getIndex() {
         return this.index;

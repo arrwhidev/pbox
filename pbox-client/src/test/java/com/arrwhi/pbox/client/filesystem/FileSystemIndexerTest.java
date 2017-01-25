@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.client.filesystem;
 
+import com.arrwhi.pbox.client.adapters.FileSystemEventToMessageAdapter;
 import com.arrwhi.pbox.client.index.Index;
 import com.arrwhi.pbox.client.index.IndexEntry;
 import com.arrwhi.pbox.client.io.MessageWriter;
@@ -25,9 +26,7 @@ public class FileSystemIndexerTest {
         File nestedDir = givenDirectoryWithFilesInsideDirectory(rootDir);
 
         Index index = new Index(rootDir.getAbsolutePath());
-        new FileSystemIndexer(
-            index, mock(FileSystemEventToMessageAdapter.class), mock(MessageWriter.class)
-        ).buildIndex();
+        new FileSystemIndexer(index).buildIndex();
 
         assertThat(index.getEntries().size(), is(3));
 
@@ -63,9 +62,7 @@ public class FileSystemIndexerTest {
         File rootDir = givenADirectoryWithAFolder();
 
         Index index = new Index(rootDir.getAbsolutePath());
-        new FileSystemIndexer(
-                index, mock(FileSystemEventToMessageAdapter.class), mock(MessageWriter.class)
-        ).buildIndex();
+        new FileSystemIndexer(index).buildIndex();
 
         IndexEntry folder = getEntryWithName(index.getEntries(), "folder");
         assertThat(folder.getHash(), is(""));

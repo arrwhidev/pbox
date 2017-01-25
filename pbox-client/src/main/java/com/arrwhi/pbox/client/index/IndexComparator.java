@@ -1,5 +1,8 @@
 package com.arrwhi.pbox.client.index;
 
+import com.arrwhi.pbox.client.index.difference.Difference;
+import com.arrwhi.pbox.client.index.difference.DifferenceType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,17 +18,32 @@ public class IndexComparator {
     public IndexComparator(Index oldIndex, Index newIndex) {
         this.differences = new ArrayList<>();
 
-        for(IndexEntry oldEntry : oldIndex.getEntries()) {
+        checkForRemovedDifferences(oldIndex.getEntries(), differences, newIndex);
+        checkForAddedDifferences(newIndex.getEntries(), differences, oldIndex);
+    }
+
+    private void checkForRemovedDifferences(List<IndexEntry> entries, List<Difference> differences, Index newIndex) {
+        for(IndexEntry oldEntry : entries) {
             if(!newIndex.containsEntry(oldEntry)) {
                 Difference difference = new Difference(oldEntry, DifferenceType.REMOVED);
                 differences.add(difference);
             }
-        }
 
-        for(IndexEntry newEntry : newIndex.getEntries()) {
+            if(oldEntry.isDirectory()) {
+                checkForRemovedDifferences(oldEntry.getEntries(), differences, newIndex);
+            }
+        }
+    }
+
+    private void checkForAddedDifferences(List<IndexEntry> entries, List<Difference> differences, Index oldIndex) {
+        for(IndexEntry newEntry : entries) {
             if(!oldIndex.containsEntry(newEntry)) {
                 Difference difference = new Difference(newEntry, DifferenceType.ADDED);
                 differences.add(difference);
+            }
+
+            if(newEntry.isDirectory()) {
+                checkForAddedDifferences(newEntry.getEntries(), differences, oldIndex);
             }
         }
     }
@@ -39,23 +57,3 @@ public class IndexComparator {
     }
 }
 
-enum DifferenceType { REMOVED, ADDED }
-
-class Difference {
-
-    private DifferenceType type;
-    private IndexEntry entry;
-
-    public Difference(IndexEntry entry, DifferenceType type) {
-        this.type = type;
-        this.entry = entry;
-    }
-
-    public DifferenceType getType() {
-        return type;
-    }
-
-    public IndexEntry getEntry() {
-        return entry;
-    }
-}

@@ -38,9 +38,18 @@ public class Index {
     }
 
     public boolean containsEntry(IndexEntry entry) {
+        return containsEntry(entry, this.entries);
+    }
+
+    private boolean containsEntry(IndexEntry entry, List<IndexEntry> entries) {
         boolean containsEntry = false;
         for(IndexEntry ie : entries) {
             if (entry.equals(ie)) {
+                containsEntry = true;
+                break;
+            }
+
+            if (ie.isDirectory() && containsEntry(entry, ie.getEntries())) {
                 containsEntry = true;
                 break;
             }

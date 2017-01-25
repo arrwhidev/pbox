@@ -1,5 +1,8 @@
 package com.arrwhi.pbox.client.index;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class IndexEntry {
@@ -23,6 +26,14 @@ public class IndexEntry {
         this.hash = hash;
         this.isDirectory = true;
         this.entries = entries;
+    }
+
+    public File getAsFile() {
+        return this.getAsPath().toFile();
+    }
+
+    public Path getAsPath() {
+        return Paths.get(this.getFilePath());
     }
 
     public String getName() {

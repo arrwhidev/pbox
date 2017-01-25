@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.client.filesystem;
+package com.arrwhi.pbox.client.factories;
 
 import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.DeleteFileMessage;
@@ -7,48 +7,21 @@ import com.arrwhi.pbox.msg.TransportFileMessage;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.WatchEvent;
 
 import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.getRelativePath;
 import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.readBytes;
-import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
- * Created by arran on 10/07/16.
+ * Created by arran on 25/01/17.
  */
-public class FileSystemEventToMessageAdapter {
+public class MessageFactory {
 
-    private final String rootDir;
-
-    public FileSystemEventToMessageAdapter(String rootDir) {
-        this.rootDir = rootDir;
-    }
-
-    public Message adapt(DirWatchEvent ev) {
-        return adapt(ev.path, ev.kind);
-    }
-
-    public Message adapt(Path p,  WatchEvent.Kind<?> kind) {
-        if(kind == ENTRY_CREATE) {
-            return handleCreateEvent(p.toFile());
-        } else if(kind == ENTRY_MODIFY) {
-            return handleModifyEvent(p.toFile());
-        } else if(kind == ENTRY_DELETE) {
-            return handleDeleteEvent(p.toFile());
-        }
-
-        return null;
-    }
-
-    // TODO: The following methods should probably move to a factory somewhere.
-
-    // 0 length payload signifies create a directory.
-    private Message handleCreateEvent(File f) {
+    public static Message createTransportFileMessage(File f, String rootDir) {
         MetaData metadata = new MetaData();
         String relative = getRelativePath(rootDir, f.toString());
         metadata.setTo(relative);
 
+        // NOTE: 0 length payload signifies create a directory.
         byte[] payload = new byte[0];
         if(!f.isDirectory()) {
             try {
@@ -60,7 +33,7 @@ public class FileSystemEventToMessageAdapter {
         return new TransportFileMessage(MetaData.toJsonBytes(metadata), payload);
     }
 
-    private Message handleDeleteEvent(File f) {
+    public static Message createDeleteFileMessage(File f, String rootDir) {
         if(f.isDirectory()) {
             return null;
         } else {
@@ -72,7 +45,8 @@ public class FileSystemEventToMessageAdapter {
         }
     }
 
-    private Message handleModifyEvent(File f) {
+    // TODO...
+    public static Message createModifyFileMessage(File f, String rootDir) {
         return null;
     }
 }

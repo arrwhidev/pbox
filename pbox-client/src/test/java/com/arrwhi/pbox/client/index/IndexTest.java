@@ -2,6 +2,10 @@ package com.arrwhi.pbox.client.index;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -33,6 +37,20 @@ public class IndexTest {
         index.add(new IndexEntry("a2", ROOT_DIR + "a2", "hash2"));
 
         assertThat(index.containsEntry(new IndexEntry("a1", ROOT_DIR + "a1", "hash1")), equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnTrue_whenIndexContainsAnEntryWithSameValuesInsideADirectory() throws Exception {
+        Index index = new Index(ROOT_DIR);
+        IndexEntry dirEntry = new IndexEntry("dir1", ROOT_DIR + "dir1", "", new ArrayList<>());
+        dirEntry.setEntries(Arrays.asList(
+                new IndexEntry("file1", ROOT_DIR + "dir1/file1", "hash1")
+        ));
+        index.add(dirEntry);
+
+        assertThat(index.containsEntry(
+            new IndexEntry("file1", ROOT_DIR + "dir1/file1", "hash1")
+        ), equalTo(true));
     }
 
     @Test

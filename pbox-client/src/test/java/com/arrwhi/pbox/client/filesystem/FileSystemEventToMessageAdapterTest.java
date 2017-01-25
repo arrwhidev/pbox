@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.client.filesystem;
 
+import com.arrwhi.pbox.client.adapters.FileSystemEventToMessageAdapter;
 import com.arrwhi.pbox.msg.DeleteFileMessage;
 import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.TransportFileMessage;
