@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>pbox-test-utils</artifactId>
-  <name>Personal Box Test Utils</name>
+  <name>Box Test Utils</name>
 
     <dependencies>
         <dependency>

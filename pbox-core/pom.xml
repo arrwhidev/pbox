@@ -7,7 +7,7 @@
   </parent>
 
   <artifactId>pbox-core</artifactId>
-  <name>Box Core</name>
+  <name>PBox Core</name>
 
     <dependencies>
         <dependency>
