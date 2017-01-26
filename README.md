@@ -20,6 +20,7 @@ Protocol format detailed in comments in each Message type (see pbox-core).
 
 ### Server ###
 
+  * Zero length payload signifies directory. There's a bug when server treats empty file as directory.
   * User ServerState
   * Handle/send acks correctly.
 
