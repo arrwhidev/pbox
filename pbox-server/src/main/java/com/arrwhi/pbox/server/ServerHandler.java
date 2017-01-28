@@ -23,6 +23,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
+        System.out.println("Got a msg!");
         ByteBuf src = (ByteBuf) msg;
         short messageType = src.readShort();
         src.resetReaderIndex();

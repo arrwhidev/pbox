@@ -11,6 +11,7 @@
         <module>pbox-core</module>
         <module>pbox-server</module>
         <module>pbox-client</module>
+        <module>pbox-integration-tests</module>
     </modules>
 
     <build>
