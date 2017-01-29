@@ -2,12 +2,12 @@ package com.arrwhi.pbox.server;
 
 import com.arrwhi.pbox.util.PropertiesHelper;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,6 @@ public class Server {
 
         Server server = new Server();
         ChannelFuture f = server.start(port, Arrays.asList(
-//                new MessageTypeHandler(),
                 new ServerHandler(writer)
         ));
         System.out.println("Server started on localhost:" + port);
@@ -40,8 +39,7 @@ public class Server {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1048576, 0, 8, 0, 8));
-                        ch.pipeline().addLast(new LengthFieldPrepender(8));
+                        ch.pipeline().addLast(new LengthAndChunkDecoder());
                         for (ChannelInboundHandlerAdapter handler : handlers) {
                             ch.pipeline().addLast(handler);
                         }
@@ -56,5 +54,36 @@ public class Server {
     public void stop() {
         bossGroup.shutdownGracefully().awaitUninterruptibly();
         workerGroup.shutdownGracefully().awaitUninterruptibly();
+    }
+}
+
+class LengthAndChunkDecoder extends ChannelInboundHandlerAdapter {
+
+    private boolean waitingForLength = true;
+    private int expecting = 0;
+    private int bytesRead = 0;
+    private ByteBuf data;
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf buf = (ByteBuf) msg;
+
+        if(waitingForLength) {
+            int length = buf.readInt();
+            data = Unpooled.buffer(length);
+            expecting = length;
+            waitingForLength = false;
+        }
+
+        bytesRead += buf.readableBytes();
+        data.writeBytes(buf);
+        buf.release();
+
+        if (bytesRead == expecting) {
+            waitingForLength = true;
+            bytesRead = 0;
+            expecting = 0;
+            ctx.fireChannelRead(data);
+        }
     }
 }

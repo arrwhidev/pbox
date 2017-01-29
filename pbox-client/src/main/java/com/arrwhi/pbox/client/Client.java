@@ -8,10 +8,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-
-import java.util.Arrays;
 
 public class Client {
 
@@ -39,7 +35,7 @@ public class Client {
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-//                ch.pipeline().addLast(new LengthAndChunkEncoder());
+                ch.pipeline().addLast(new LengthAndChunkEncoder());
                 ch.pipeline().addLast(clientHandler);
             }
         });
@@ -53,39 +49,34 @@ public class Client {
     }
 }
 
-//
-//class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
-//    @Override
-//    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-//        ByteBuf buf = (ByteBuf) msg;
-//
-//        // First write length as 8 bytes.
-//        buf.readableBytes();
-//
-//
-//
-//        // now chunk and write....
-//
-//
-////        int bytesToWrite = buf1.length;
-////        int offset = 0;
-////        final int chunkSize = 1024;
-////        while (offset < buf1.length) {
-////            int endIndex = offset + chunkSize;
-////            if (endIndex > buf1.length) endIndex = buf1.length;
-////            ByteBuf buffer = Unpooled.copiedBuffer(Arrays.copyOfRange(buf1, offset, endIndex));
-////
-////            System.out.println("Offset: " + offset);
-////            System.out.println("EndIndex: " + endIndex);
-////
-////            while (!clientChannel.isWritable()) {
-////                System.out.println("waiting for channel to be writable...");
-////                Thread.sleep(10);
-////            }
-////            clientChannel.write(buffer);
-////            offset += chunkSize;
-////        }
-//
-//    }
-//}
+
+class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
+
+    private final static int CHUNK_SIZE_IN_BYTES = 1024 * 8;
+
+    @Override
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        ByteBuf buf = (ByteBuf) msg;
+
+        // First write length as 4 bytes.
+        final int length = buf.readableBytes();
+        ByteBuf lengthBuffer = Unpooled.buffer();
+        lengthBuffer.writeInt(length);
+        ctx.write(lengthBuffer);
+
+        // Write chunks.
+        int offset = 0;
+        byte[] data = new byte[CHUNK_SIZE_IN_BYTES];
+        while (offset < length) {
+            if(length - offset < CHUNK_SIZE_IN_BYTES) {
+                data = new byte[length - offset];
+            }
+
+            buf.readBytes(data);
+            ctx.write(Unpooled.copiedBuffer(data));
+
+            offset += CHUNK_SIZE_IN_BYTES;
+        }
+    }
+}
 

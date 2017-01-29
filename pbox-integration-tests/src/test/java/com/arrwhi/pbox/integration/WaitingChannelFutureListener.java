@@ -18,6 +18,7 @@ public class WaitingChannelFutureListener implements ChannelFutureListener {
 
     @Override
     public void operationComplete(ChannelFuture future) {
+        System.out.println("Client connected to server.");
         latch.countDown();
     }
 }
