@@ -1,12 +1,15 @@
 package com.arrwhi.pbox.integration;
 
 import com.arrwhi.pbox.RandomTestUtils;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -35,31 +38,30 @@ public class EndToEndTest {
         wrapper.shutdown();
     }
 
-    @Test
-    public void shouldHandleSmallMessages() throws Exception {
-        final int numMsg = 2;
-        final CountDownLatch messageLatch = new CountDownLatch(numMsg);
-        serverHandler.setLatch(messageLatch);
-
-        byte[] buf1 = RandomTestUtils.randomBytes(16);
-        byte[] buf2 = RandomTestUtils.randomBytes(32);
-        clientChannel.writeAndFlush(Unpooled.copiedBuffer(buf1));
-        clientChannel.writeAndFlush(Unpooled.copiedBuffer(buf2));
-        messageLatch.await();
-
-        assertThat(serverHandler.didHaveErrors(), equalTo(false));
-        assertThat(serverHandler.getRecvedMsgs().size(), equalTo(numMsg));
-        assertThat(buf1, equalTo(serverHandler.getRecvedMsgs().get(0)));
-        assertThat(buf2, equalTo(serverHandler.getRecvedMsgs().get(1)));
-    }
+//    @Test
+//    public void shouldHandleSmallMessages() throws Exception {
+//        final int numMsg = 2;
+//        final CountDownLatch messageLatch = new CountDownLatch(numMsg);
+//        serverHandler.setLatch(messageLatch);
+//
+//        byte[] buf1 = RandomTestUtils.randomBytes(16);
+//        byte[] buf2 = RandomTestUtils.randomBytes(32);
+//        clientChannel.writeAndFlush(Unpooled.copiedBuffer(buf1));
+//        clientChannel.writeAndFlush(Unpooled.copiedBuffer(buf2));
+//        messageLatch.await();
+//
+//        assertThat(serverHandler.didHaveErrors(), equalTo(false));
+//        assertThat(serverHandler.getRecvedMsgs().size(), equalTo(numMsg));
+//        assertThat(buf1, equalTo(serverHandler.getRecvedMsgs().get(0)));
+//        assertThat(buf2, equalTo(serverHandler.getRecvedMsgs().get(1)));
+//    }
 
     @Test
     public void shouldHandleLargeMessage() throws Exception {
         final int numMsg = 1;
         final CountDownLatch messageLatch = new CountDownLatch(numMsg);
         serverHandler.setLatch(messageLatch);
-
-        byte[] buf1 = RandomTestUtils.randomBytes(1048576 * 2); // Larger than max!
+        byte[] buf1 = RandomTestUtils.randomBytes(1024 * 8);
         clientChannel.writeAndFlush(Unpooled.copiedBuffer(buf1));
         messageLatch.await();
 

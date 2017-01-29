@@ -16,7 +16,7 @@ public class Server {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    
+
     public static void main(String[] args) throws Exception {
         final int port = Integer.parseInt(PropertiesHelper.get("port"));
         final String destinationDir = PropertiesHelper.get("destinationDirectory");
@@ -31,24 +31,24 @@ public class Server {
         f.channel().closeFuture().sync();
     }
 
-    public ChannelFuture start(int port,  List<ChannelInboundHandlerAdapter> handlers) throws Exception {
+    public ChannelFuture start(int port, List<ChannelInboundHandlerAdapter> handlers) throws Exception {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
-         .channel(NioServerSocketChannel.class)
-         .childHandler(new ChannelInitializer<SocketChannel>() {
-             @Override
-             public void initChannel(SocketChannel ch) throws Exception {
-                 ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1048576, 0, 8, 0, 8));
-                 ch.pipeline().addLast(new LengthFieldPrepender(8));
-                 for(ChannelInboundHandlerAdapter handler : handlers) {
-                     ch.pipeline().addLast(handler);
-                 }
-             }
-         })
-         .option(ChannelOption.SO_BACKLOG, 128)
-         .childOption(ChannelOption.SO_KEEPALIVE, true);
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1048576, 0, 8, 0, 8));
+                        ch.pipeline().addLast(new LengthFieldPrepender(8));
+                        for (ChannelInboundHandlerAdapter handler : handlers) {
+                            ch.pipeline().addLast(handler);
+                        }
+                    }
+                })
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.SO_KEEPALIVE, true);
 
         return b.bind(port).sync();
     }
