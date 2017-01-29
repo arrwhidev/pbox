@@ -1,15 +1,12 @@
 package com.arrwhi.pbox.integration;
 
 import com.arrwhi.pbox.RandomTestUtils;
-import com.arrwhi.pbox.client.Client;
-import com.arrwhi.pbox.server.Server;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.equalTo;
