@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Server {
+
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
     
     public static void main(String[] args) throws Exception {
         final int port = Integer.parseInt(PropertiesHelper.get("port"));
@@ -29,8 +32,8 @@ public class Server {
     }
 
     public ChannelFuture start(int port,  List<ChannelInboundHandlerAdapter> handlers) throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
          .channel(NioServerSocketChannel.class)
@@ -48,5 +51,10 @@ public class Server {
          .childOption(ChannelOption.SO_KEEPALIVE, true);
 
         return b.bind(port).sync();
+    }
+
+    public void stop() {
+        bossGroup.shutdownGracefully().awaitUninterruptibly();
+        workerGroup.shutdownGracefully().awaitUninterruptibly();
     }
 }

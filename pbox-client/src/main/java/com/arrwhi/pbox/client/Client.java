@@ -11,6 +11,8 @@ import io.netty.handler.codec.LengthFieldPrepender;
 
 public class Client {
 
+    private EventLoopGroup workerGroup;
+
     public static void main(String[] args) throws Exception {
         final String host = PropertiesHelper.get("serverHost");
         final int port = Integer.parseInt(PropertiesHelper.get("serverPort"));
@@ -24,7 +26,7 @@ public class Client {
     }
 
     public ChannelFuture start(String serverHost, int serverPort, ChannelInboundHandlerAdapter clientHandler) throws Exception {
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
 
         Bootstrap b = new Bootstrap();
         b.group(workerGroup);
@@ -41,5 +43,9 @@ public class Client {
 
         // Connect to the server
         return b.connect(serverHost, serverPort).sync();
+    }
+
+    public void stop() {
+        workerGroup.shutdownGracefully().awaitUninterruptibly();
     }
 }
