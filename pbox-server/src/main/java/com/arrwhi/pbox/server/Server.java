@@ -84,6 +84,7 @@ class LengthAndChunkDecoder extends ChannelInboundHandlerAdapter {
             bytesRead = 0;
             expecting = 0;
             ctx.fireChannelRead(data);
+            data.release();
         }
     }
 }

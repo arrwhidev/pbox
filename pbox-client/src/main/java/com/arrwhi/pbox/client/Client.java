@@ -63,6 +63,7 @@ class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
         ByteBuf lengthBuffer = Unpooled.buffer();
         lengthBuffer.writeInt(length);
         ctx.write(lengthBuffer);
+        lengthBuffer.release();
 
         // Write chunks.
         int offset = 0;
@@ -77,6 +78,7 @@ class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
 
             offset += CHUNK_SIZE_IN_BYTES;
         }
+        buf.release();
     }
 }
 
