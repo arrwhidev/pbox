@@ -52,7 +52,7 @@ public class Client {
 
 class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
 
-    private final static int CHUNK_SIZE_IN_BYTES = 1024 * 8; // 64k
+    private final static int CHUNK_SIZE_IN_BYTES = 1024 * 8; // 8k
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
