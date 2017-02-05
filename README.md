@@ -27,7 +27,6 @@ Protocol format detailed in comments in each Message type (see pbox-core).
 ### Future Plans ###
 
   * Delete directories that are not empty.
-  * Handle large files; io.netty.handler.codec.TooLongFrameException: Adjusted frame length exceeds 104857.
   * Test across different operating systems (Linux/MacOS/Windows).
   * Add end to end encryption.
     * Implement Diffie Hellman or SRP handshakes for key exchange.
