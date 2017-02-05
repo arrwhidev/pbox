@@ -2,6 +2,7 @@ package com.arrwhi.pbox.client.io;
 
 import com.arrwhi.pbox.client.filesystem.FileSystemChangeEvent;
 import com.arrwhi.pbox.msg.Message;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import java.util.Observable;
 import java.util.Observer;
@@ -24,8 +25,8 @@ public class MessageWriter implements Observer {
     public void writeMessage(Message msg) {
         try {
             if(msg != null) {
-                System.out.println("Wrote message!");
-                channel.writeAndFlush(msg.writeTo());
+                ByteBuf byteBuf = msg.writeTo();
+                channel.writeAndFlush(byteBuf);
             }
         } catch (Exception e) {
             e.printStackTrace();

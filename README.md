@@ -34,3 +34,4 @@ Protocol format detailed in comments in each Message type (see pbox-core).
   * Streaming.
   * Rewrite Client/Server such that they are same and can be used as either/both.
   * Implement Server in different language for fun?!
+  * Handle files that are larger than 2GB. Using int for length field (Integer.MAX == 2GB in bytes)

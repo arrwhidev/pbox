@@ -64,7 +64,7 @@ public class EndToEndTest {
         final int numMsg = 1;
         final CountDownLatch messageLatch = new CountDownLatch(numMsg);
         serverHandler.setLatch(messageLatch);
-        byte[] buf1 = RandomTestUtils.randomBytes(1024 * 1024 * 5);
+        byte[] buf1 = RandomTestUtils.randomBytes(1024 * 1024 * 10);
         clientChannel.writeAndFlush(Unpooled.copiedBuffer(buf1));
         messageLatch.await();
 
@@ -74,10 +74,24 @@ public class EndToEndTest {
     }
 
     @Test
-    @Ignore
     public void shouldHandleLotsOfSmallMessages() throws Exception {
-        // TODO
-        final int NUM_MSGS = 1000;
+        final int NUM_MSGS = 1000 * 1000;
+        final CountDownLatch messageLatch = new CountDownLatch(NUM_MSGS);
+        serverHandler.setLatch(messageLatch);
+
+        List<byte[]> buffersToWrite = new ArrayList<>();
+        for(int i = 0; i < NUM_MSGS; i++) {
+            byte[] msg = RandomTestUtils.randomBytes(16); // TODO: randomize the size too.
+            buffersToWrite.add(msg);
+            clientChannel.writeAndFlush(Unpooled.copiedBuffer(msg));
+        }
+        messageLatch.await();
+
+        assertThat(serverHandler.didHaveErrors(), equalTo(false));
+        assertThat(serverHandler.getRecvedMsgs().size(), equalTo(NUM_MSGS));
+        for(int i = 0; i < NUM_MSGS; i++) {
+            assertThat(buffersToWrite.get(i), equalTo(serverHandler.getRecvedMsgs().get(i)));
+        }
     }
 
     @Test

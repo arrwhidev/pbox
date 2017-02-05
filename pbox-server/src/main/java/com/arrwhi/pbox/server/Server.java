@@ -59,32 +59,40 @@ public class Server {
 
 class LengthAndChunkDecoder extends ChannelInboundHandlerAdapter {
 
-    private boolean waitingForLength = true;
-    private int expecting = 0;
-    private int bytesRead = 0;
-    private ByteBuf data;
+    boolean waitingForLength = true;
+    int expecting = 0;
+    int bytesRead = 0;
+    ByteBuf data;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf buf = (ByteBuf) msg;
 
-        if(waitingForLength) {
-            int length = buf.readInt();
-            data = Unpooled.buffer(length);
-            expecting = length;
-            waitingForLength = false;
-        }
+        while (buf.readableBytes() > 0) {
+            if(waitingForLength) {
+                int length = buf.readInt();
+                data = Unpooled.buffer(length);
+                expecting = length;
+                waitingForLength = false;
+            }
 
-        bytesRead += buf.readableBytes();
-        data.writeBytes(buf);
-        buf.release();
+            int bytesRemaining = expecting - bytesRead;
+            if (buf.readableBytes() >= bytesRemaining) {
+                // Buffer contains everything we need so just read what is required.
+                bytesRead += bytesRemaining;
+                buf.readBytes(data, bytesRemaining);
 
-        if (bytesRead == expecting) {
-            waitingForLength = true;
-            bytesRead = 0;
-            expecting = 0;
-            ctx.fireChannelRead(data);
-            data.release();
+                // We are finished with this message, reset!
+                waitingForLength = true;
+                bytesRead = 0;
+                expecting = 0;
+                ctx.fireChannelRead(data);
+                data.release();
+            } else {
+                // Buffer doesn't contain enough, gonna need more!
+                bytesRead += buf.readableBytes();
+                data.writeBytes(buf);
+            }
         }
     }
 }

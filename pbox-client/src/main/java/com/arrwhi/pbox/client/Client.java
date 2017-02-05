@@ -52,7 +52,7 @@ public class Client {
 
 class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
 
-    private final static int CHUNK_SIZE_IN_BYTES = 1024 * 8;
+    private final static int CHUNK_SIZE_IN_BYTES = 1024 * 8; // 64k
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
@@ -62,8 +62,7 @@ class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
         final int length = buf.readableBytes();
         ByteBuf lengthBuffer = Unpooled.buffer();
         lengthBuffer.writeInt(length);
-        ctx.write(lengthBuffer);
-        lengthBuffer.release();
+        ctx.writeAndFlush(lengthBuffer);
 
         // Write chunks.
         int offset = 0;
@@ -78,6 +77,7 @@ class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
 
             offset += CHUNK_SIZE_IN_BYTES;
         }
+        ctx.flush();
         buf.release();
     }
 }
