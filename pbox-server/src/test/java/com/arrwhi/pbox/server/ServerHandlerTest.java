@@ -43,6 +43,6 @@ public class ServerHandlerTest {
         MetaData md = new MetaData();
         md.setTo(NAME);
         byte[] metadata = MetaData.toJsonBytes(md);
-        return new TransportFileMessage(metadata, payload).writeTo();
+        return new TransportFileMessage(metadata, payload).writeToNewBuffer();
     }
 }

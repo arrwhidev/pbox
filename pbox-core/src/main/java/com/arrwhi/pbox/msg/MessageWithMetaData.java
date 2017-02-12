@@ -25,8 +25,8 @@ public abstract class MessageWithMetaData extends Message {
         src.readBytes(metaData);
     }
 
-    public void writeTo(ByteBuf dest) {
-        super.writeTo(dest);
+    public void writeToNewBuffer(ByteBuf dest) {
+        super.writeToNewBuffer(dest);
         dest.writeInt(metaData.length);
         dest.writeBytes(metaData);
     }

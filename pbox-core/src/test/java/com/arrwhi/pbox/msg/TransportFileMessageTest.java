@@ -1,6 +1,7 @@
 package com.arrwhi.pbox.msg;
 
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
+import com.arrwhi.pbox.msg.flags.Flags;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
@@ -29,6 +30,7 @@ public class TransportFileMessageTest {
         assertArrayEquals(metadata, msg.getMetaData());
         assertArrayEquals(payload, msg.getPayload());
         assertEquals(msg.getType(), MessageFactory.TRANSPORT_FILE);
+        assertEquals(msg.getFlags().getFlags(), 13);
     }
 
     @Test
@@ -36,12 +38,14 @@ public class TransportFileMessageTest {
         byte[] metadata = randomBytes(16);
         byte[] payload = randomBytes(1024);
         TransportFileMessage msg = new TransportFileMessage();
+        msg.setFlags(new Flags((byte) 17));
         msg.setMetaData(metadata);
         msg.setPayload(payload);
         ByteBuf buf = Unpooled.buffer();
-        msg.writeTo(buf);
+        msg.writeToNewBuffer(buf);
 
         assertEquals(MessageFactory.TRANSPORT_FILE, buf.readShort());
+        assertEquals(17, buf.readByte());
         buf.readInt();
         byte[] newMetaData = new byte[16];
         buf.readBytes(newMetaData);
@@ -55,6 +59,7 @@ public class TransportFileMessageTest {
     private ByteBuf createValidPayloadMessageBuffer(byte[] metadata, byte[] payload) {
         ByteBuf buf = Unpooled.buffer();
         buf.writeShort(MessageFactory.TRANSPORT_FILE);
+        buf.writeByte((byte) 13); // random byte to represent flags.
         buf.writeInt(metadata.length);
         buf.writeBytes(metadata);
         buf.writeBytes(payload);

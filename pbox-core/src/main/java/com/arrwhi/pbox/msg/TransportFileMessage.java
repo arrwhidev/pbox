@@ -29,8 +29,8 @@ public class TransportFileMessage extends MessageWithMetaData {
         src.readBytes(payload);
     }
 
-    public void writeTo(ByteBuf dest) {
-        super.writeTo(dest);
+    public void writeToNewBuffer(ByteBuf dest) {
+        super.writeToNewBuffer(dest);
         dest.writeBytes(payload);
     }
     

@@ -24,7 +24,7 @@ public class MessageWriter implements Observer {
     public void writeMessage(Message msg) {
         try {
             if(msg != null) {
-                channel.writeAndFlush(msg.writeTo());
+                channel.writeAndFlush(msg.writeToNewBuffer());
             }
         } catch (Exception e) {
             e.printStackTrace();
