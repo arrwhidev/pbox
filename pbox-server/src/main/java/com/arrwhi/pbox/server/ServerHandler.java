@@ -45,9 +45,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         try {
             TransportFileMessage msg = MessageFactory.createTransportFileMessageFrom(src);
             String path = MetaData.fromJsonBytes(msg.getMetaData()).getTo();
-            int payloadLength = msg.getPayload().length;
-
-            if (payloadLength == 0) {
+            if (msg.getFlags().isDirectory()) {
                 writer.createDir(path);
             } else {
                 writer.write(path, msg.getPayload());

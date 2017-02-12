@@ -4,6 +4,7 @@ import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.DeleteFileMessage;
 import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.TransportFileMessage;
+import com.arrwhi.pbox.msg.flags.Flags;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +22,6 @@ public class MessageFactory {
         String relative = getRelativePath(rootDir, f.toString());
         metadata.setTo(relative);
 
-        // NOTE: 0 length payload signifies create a directory.
         byte[] payload = new byte[0];
         if(!f.isDirectory()) {
             try {
@@ -30,23 +30,33 @@ public class MessageFactory {
                 e.printStackTrace();
             }
         }
-        return new TransportFileMessage(MetaData.toJsonBytes(metadata), payload);
+
+        return setFlagsOnMessage(
+            new TransportFileMessage(MetaData.toJsonBytes(metadata), payload),
+            f.isDirectory()
+        );
     }
 
     public static Message createDeleteFileMessage(File f, String rootDir) {
-        if(f.isDirectory()) {
-            return null;
-        } else {
-            MetaData metadata = new MetaData();
-            String relative = getRelativePath(rootDir, f.toString());
-            metadata.setFrom(relative);
+        MetaData metadata = new MetaData();
+        String relative = getRelativePath(rootDir, f.toString());
+        metadata.setFrom(relative);
 
-            return new DeleteFileMessage(MetaData.toJsonBytes(metadata));
-        }
+        return setFlagsOnMessage(
+            new DeleteFileMessage(MetaData.toJsonBytes(metadata)),
+            f.isDirectory()
+        );
     }
 
     // TODO...
     public static Message createModifyFileMessage(File f, String rootDir) {
         return null;
+    }
+
+    private static Message setFlagsOnMessage(Message msg, boolean isDirectory) {
+        Flags flags = new Flags();
+        flags.setIsDirectory(isDirectory);
+        msg.setFlags(flags);
+        return msg;
     }
 }

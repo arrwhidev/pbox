@@ -3,6 +3,7 @@ package com.arrwhi.pbox.server;
 import com.arrwhi.pbox.RandomTestUtils;
 import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.TransportFileMessage;
+import com.arrwhi.pbox.msg.flags.Flags;
 import io.netty.buffer.ByteBuf;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,24 +26,39 @@ public class ServerHandlerTest {
     }
 
     @Test
-    public void shouldCreateDir_whenTransportFileMessageHasZeroLengthPayload() throws Exception {
+    public void shouldCreateDir_whenTransportFileMessageIsDirectory() throws Exception {
         ServerHandler handler = new ServerHandler(writer);
-        handler.handleTransportFile(transportFileMessageWithPayload(new byte[0]));
+        Flags flags = new Flags();
+        flags.setIsDirectory(true);
+
+        handler.handleTransportFile(transportFileMessageWithPayload(new byte[0], flags));
         verify(writer, times(1)).createDir(NAME);
     }
 
     @Test
-    public void shouldCreateFile_whenTransportFileMessageHasZeroLengthPayload() throws Exception {
-        final byte[] payload = RandomTestUtils.randomBytes(16);
+    public void shouldCreateFile_whenTransportFileMessageIsNotDirectory_andHasZeroLengthPayload() throws Exception {
         ServerHandler handler = new ServerHandler(writer);
-        handler.handleTransportFile(transportFileMessageWithPayload(payload));
+        final byte[] payload = RandomTestUtils.randomBytes(0);
+        handler.handleTransportFile(transportFileMessageWithPayload(payload, new Flags()));
         verify(writer, times(1)).write(NAME, payload);
     }
 
-    private ByteBuf transportFileMessageWithPayload(byte[] payload) {
+    @Test
+    public void shouldCreateFile_whenTransportFileMessageIsNotDirectory() throws Exception {
+        final byte[] payload = RandomTestUtils.randomBytes(16);
+        ServerHandler handler = new ServerHandler(writer);
+        handler.handleTransportFile(transportFileMessageWithPayload(payload, new Flags()));
+        verify(writer, times(1)).write(NAME, payload);
+    }
+
+    private ByteBuf transportFileMessageWithPayload(byte[] payload, Flags flags) {
         MetaData md = new MetaData();
         md.setTo(NAME);
         byte[] metadata = MetaData.toJsonBytes(md);
-        return new TransportFileMessage(metadata, payload).writeToNewBuffer();
+
+        TransportFileMessage m = new TransportFileMessage(metadata, payload);
+        m.setFlags(flags);
+
+        return m.writeToNewBuffer();
     }
 }
