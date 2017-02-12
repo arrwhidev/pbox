@@ -7,7 +7,7 @@ This is really basic and buggy right now, it should stabilise soon though!
 
 Protocol format detailed in comments in each Message type (see pbox-core).
 
-## TODO ##
+## TODO & Bugs ##
 
 ### Client ###
 
