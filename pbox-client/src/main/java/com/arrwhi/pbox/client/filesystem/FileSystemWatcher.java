@@ -84,10 +84,16 @@ public class FileSystemWatcher extends Observable implements Runnable {
                     System.err.println("FileSystemWatcher - OVERFLOW");
                     continue;
                 } else {
+                    // Seems to be a weird bug here (on linux, need to test on OSX).
+                    // event.path.toFile().isDirectory() returns false when it is a directory.
+                    System.out.println(event.kind.name() + " - isDirectory:" + event.path.toFile().isDirectory());
+
                     Message msg = eventToMessageAdapter.adapt(event);
                     if (msg != null) {
                         if (event.kind.equals(ENTRY_CREATE) && event.path.toFile().isDirectory()) {
                             register(event.path.toFile());
+                        } else if (event.kind.equals(ENTRY_DELETE) && event.path.toFile().isDirectory()) {
+                            // TODO: unregister() - need to remove from dirsToWatch.
                         }
 
                         setChanged();

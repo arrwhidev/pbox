@@ -32,7 +32,7 @@ public class FileSystemUtils {
     public static IndexEntry createIndexEntry(File file) throws Exception {
         String name = file.getName();
         String path = file.getAbsolutePath();
-        String hashString = hashToHex(createHash(readBytes(file)));
+        String hashString = file.isDirectory() ? "nohash" : hashToHex(createHash(readBytes(file)));
         return new IndexEntry(name, path, hashString);
     }
 

@@ -19,7 +19,7 @@ public class FileWriter {
         try {
             Files.write(newFile, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error when writing: " + path + " - " + e.getMessage());
         }
     }
 
@@ -28,7 +28,7 @@ public class FileWriter {
         try {
             Files.createDirectory(newFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error when creating dir: " + path + " - " + e.getMessage());
         }
     }
 
@@ -37,7 +37,7 @@ public class FileWriter {
         try {
             Files.delete(p);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error when deleting: " + path + " - " + e.getMessage());
         }
     }
     
