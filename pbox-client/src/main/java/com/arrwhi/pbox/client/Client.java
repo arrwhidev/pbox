@@ -2,8 +2,6 @@ package com.arrwhi.pbox.client;
 
 import com.arrwhi.pbox.util.PropertiesHelper;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -48,37 +46,3 @@ public class Client {
         workerGroup.shutdownGracefully().awaitUninterruptibly();
     }
 }
-
-
-class LengthAndChunkEncoder extends ChannelOutboundHandlerAdapter {
-
-    private final static int CHUNK_SIZE_IN_BYTES = 1024 * 8; // 8k
-
-    @Override
-    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        ByteBuf buf = (ByteBuf) msg;
-
-        // First write length as 4 bytes.
-        final int length = buf.readableBytes();
-        ByteBuf lengthBuffer = Unpooled.buffer();
-        lengthBuffer.writeInt(length);
-        ctx.writeAndFlush(lengthBuffer);
-
-        // Write chunks.
-        int offset = 0;
-        byte[] data = new byte[CHUNK_SIZE_IN_BYTES];
-        while (offset < length) {
-            if(length - offset < CHUNK_SIZE_IN_BYTES) {
-                data = new byte[length - offset];
-            }
-
-            buf.readBytes(data);
-            ctx.write(Unpooled.copiedBuffer(data));
-
-            offset += CHUNK_SIZE_IN_BYTES;
-        }
-        ctx.flush();
-        buf.release();
-    }
-}
-
