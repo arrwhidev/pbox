@@ -15,8 +15,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.WatchService;
 import java.util.List;
 
 /**
@@ -43,13 +41,11 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
 
     protected void handleConnectionSuccess(Channel channel) throws IOException {
         final MessageWriter messageWriter = new MessageWriter(channel);
-        final FileSystemEventToMessageAdapter fsEventAdapter = new FileSystemEventToMessageAdapter(sourceDir);
 
         Index index = setupIndex(messageWriter);
-        WatchService watchService = FileSystems.getDefault().newWatchService();
         IndexUpdater indexUpdater = new IndexUpdater(index);
 
-        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sourceDir, watchService, fsEventAdapter);
+        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sourceDir);
         fileSystemWatcher.addObserver(indexUpdater);
         fileSystemWatcher.addObserver(messageWriter);
 

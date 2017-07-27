@@ -28,7 +28,7 @@ public class FileSytemWatcherTest {
         tempDir.newFolder("q", "e", "x", "A");
         tempDir.newFile();
 
-        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher("", null, null);
+        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher("");
         Set<File> dirs = fileSystemWatcher.allNestedDirectoriesForPath(new HashSet<>(), tempDir.getRoot());
         assertThat(dirs.size(), equalTo(10));
     }

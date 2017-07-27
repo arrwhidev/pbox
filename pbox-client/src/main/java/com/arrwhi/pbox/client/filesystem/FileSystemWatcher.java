@@ -11,6 +11,10 @@ import java.util.*;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
+/**
+ * Standalone observable class to watch the file system.
+ * Register observers to handle file system change events.
+ */
 public class FileSystemWatcher extends Observable implements Runnable {
 
     private Path rootDir;
@@ -19,44 +23,16 @@ public class FileSystemWatcher extends Observable implements Runnable {
     private FileSystemEventToMessageAdapter eventToMessageAdapter;
     private boolean isWatching;
 
-    public FileSystemWatcher(String rootDir, WatchService watcher, FileSystemEventToMessageAdapter adapter) {
-        this.rootDir = Paths.get(rootDir);
-        this.watcher = watcher;
-        this.directoriesBeingWatched = new ArrayList<>();
-        this.eventToMessageAdapter = adapter;
+    public FileSystemWatcher(String rootDir) throws IOException {
         this.isWatching = false;
+        this.rootDir = Paths.get(rootDir);
+        this.directoriesBeingWatched = new ArrayList<>();
+        this.eventToMessageAdapter = new FileSystemEventToMessageAdapter(rootDir);
+        this.watcher = FileSystems.getDefault().newWatchService();
     }
 
     public void stop() {
         this.isWatching = false;
-    }
-
-    void register(File f) {
-        Path p = f.toPath();
-        try {
-            DirBeingWatched dirToWatch = new DirBeingWatched();
-            dirToWatch.key = p.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-            dirToWatch.path = p;
-            directoriesBeingWatched.add(dirToWatch);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    Set<File> allNestedDirectoriesForPath(File directory) {
-        return allNestedDirectoriesForPath(new HashSet<>(), directory);
-    }
-
-    Set<File> allNestedDirectoriesForPath(Set<File> dirs, File directory) {
-        for(File f : directory.listFiles()) {
-            if(f.isDirectory()) {
-                dirs.add(f);
-                if(f.listFiles().length > 0) {
-                    allNestedDirectoriesForPath(dirs, f);
-                }
-            }
-        }
-        return dirs;
     }
 
     public void run() {
@@ -107,11 +83,40 @@ public class FileSystemWatcher extends Observable implements Runnable {
             }
 
             try {
+                // TODO: make the poll time customisable from properties.
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 System.err.println("Interrupted!");
                 e.printStackTrace();
             }
         }
+    }
+
+    private void register(File f) {
+        Path p = f.toPath();
+        try {
+            DirBeingWatched dirToWatch = new DirBeingWatched();
+            dirToWatch.key = p.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            dirToWatch.path = p;
+            directoriesBeingWatched.add(dirToWatch);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Set<File> allNestedDirectoriesForPath(File directory) {
+        return allNestedDirectoriesForPath(new HashSet<>(), directory);
+    }
+
+    Set<File> allNestedDirectoriesForPath(Set<File> dirs, File directory) {
+        for(File f : directory.listFiles()) {
+            if(f.isDirectory()) {
+                dirs.add(f);
+                if(f.listFiles().length > 0) {
+                    allNestedDirectoriesForPath(dirs, f);
+                }
+            }
+        }
+        return dirs;
     }
 }
