@@ -1,6 +1,5 @@
 package com.arrwhi.pbox.msg.flags;
 
-import com.arrwhi.pbox.msg.flags.Flags;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
