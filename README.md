@@ -22,6 +22,11 @@ Protocol format detailed in comments in each Message type (see pbox-core).
 
   * User ServerState
   * Handle/send acks correctly.
+  
+### Common ###
+
+  * Add real logging - replace System.out.printlns.
+  * Handle exceptions better - don't just print stack trace.
 
 ### Future Plans ###
 
