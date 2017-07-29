@@ -1,9 +1,12 @@
-package com.arrwhi.pbox.msg;
+package com.arrwhi.pbox.msg.metadata;
 
 import org.apache.commons.codec.Charsets;
 
 import com.google.gson.Gson;
 
+/*
+ * Contains various values which get serialized into JSON.
+ */
 public class MetaData {
 
     private static final Gson GSON;

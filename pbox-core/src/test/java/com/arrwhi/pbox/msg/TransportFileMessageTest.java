@@ -2,6 +2,8 @@ package com.arrwhi.pbox.msg;
 
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
 import com.arrwhi.pbox.msg.flags.Flags;
+import com.arrwhi.pbox.msg.metadata.MetaData;
+import com.arrwhi.pbox.msg.metadata.MetaDataBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;

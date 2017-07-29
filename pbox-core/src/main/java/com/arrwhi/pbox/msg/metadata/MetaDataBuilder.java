@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.msg;
+package com.arrwhi.pbox.msg.metadata;
 
 /**
  * Created by arran on 29/07/17.

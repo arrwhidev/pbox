@@ -1,5 +1,7 @@
 package com.arrwhi.pbox.msg;
 
+import com.arrwhi.pbox.msg.metadata.MetaData;
+
 /*
  * Transport File Ack Message
  * 
