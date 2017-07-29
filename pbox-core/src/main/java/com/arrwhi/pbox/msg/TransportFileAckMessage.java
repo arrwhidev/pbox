@@ -1,5 +1,7 @@
 package com.arrwhi.pbox.msg;
 
+import com.arrwhi.pbox.json.MetaData;
+
 /*
  * Transport File Ack Message
  * 
@@ -11,7 +13,7 @@ public class TransportFileAckMessage extends MessageWithMetaData {
     public TransportFileAckMessage() {
         this(null);
     }
-    public TransportFileAckMessage(byte[] metadata) {
+    public TransportFileAckMessage(MetaData metadata) {
         super(MessageFactory.TRANSPORT_FILE_ACK, metadata);
     }
 }

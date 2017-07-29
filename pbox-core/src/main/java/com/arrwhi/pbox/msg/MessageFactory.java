@@ -28,15 +28,9 @@ public class MessageFactory {
     }
 
     public static Message createTransportFileMessage(File f, String rootDir) {
-        MetaData metadata = new MetaData();
         String relative = PathHelper.getRelativePath(rootDir, f.toString());
-        metadata.setTo(relative);
-        try {
-            metadata.setHash(HashFactory.create(f));
-        } catch (Exception e) {
-            // TODO: handle this.
-            e.printStackTrace();
-        }
+        String hash = HashFactory.create(f);
+        MetaData metaData = new MetaDataBuilder().withTo(relative).withHash(hash).build();
 
         byte[] payload = new byte[0];
         if(!f.isDirectory()) {
@@ -48,7 +42,7 @@ public class MessageFactory {
         }
 
         return setFlagsOnMessage(
-                new TransportFileMessage(MetaData.toJsonBytes(metadata), payload),
+                new TransportFileMessage(metaData, payload),
                 f.isDirectory()
         );
     }
@@ -61,9 +55,8 @@ public class MessageFactory {
     }
 
     public static TransportFileAckMessage createTransportFileAckMessage(String hash) {
-        MetaData metadata = new MetaData();
-        metadata.setHash(hash);
-        return new TransportFileAckMessage(MetaData.toJsonBytes(metadata));
+        MetaData metadata = new MetaDataBuilder().withHash(hash).build();
+        return new TransportFileAckMessage(metadata);
     }
 
     public static DeleteFileMessage createDeleteMessageFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
@@ -74,12 +67,11 @@ public class MessageFactory {
     }
 
     public static Message createDeleteFileMessage(File f, String rootDir) {
-        MetaData metadata = new MetaData();
         String relative = PathHelper.getRelativePath(rootDir, f.toString());
-        metadata.setFrom(relative);
+        MetaData metaData = new MetaDataBuilder().withFrom(relative).build();
 
         return setFlagsOnMessage(
-                new DeleteFileMessage(MetaData.toJsonBytes(metadata)),
+                new DeleteFileMessage(metaData),
                 f.isDirectory()
         );
     }

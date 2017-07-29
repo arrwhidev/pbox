@@ -13,16 +13,7 @@ public class IndexEntryFactory {
     public static IndexEntry create(File file) {
         String name = file.getName();
         String path = file.getAbsolutePath();
-
-        String hashString;
-        try {
-            hashString = HashFactory.create(file);
-        } catch (Exception e) {
-            // TODO: Handle this error scenario.
-            hashString = "could-not-generate";
-            e.printStackTrace();
-        }
-
+        String hashString = HashFactory.create(file);
         return new IndexEntry(name, path, hashString);
     }
 

@@ -2,6 +2,7 @@ package com.arrwhi.pbox.server;
 
 import com.arrwhi.pbox.RandomTestUtils;
 import com.arrwhi.pbox.json.MetaData;
+import com.arrwhi.pbox.msg.MetaDataBuilder;
 import com.arrwhi.pbox.msg.TransportFileMessage;
 import com.arrwhi.pbox.msg.flags.Flags;
 import io.netty.buffer.ByteBuf;
@@ -52,11 +53,8 @@ public class ServerHandlerTest {
     }
 
     private ByteBuf transportFileMessageWithPayload(byte[] payload, Flags flags) {
-        MetaData md = new MetaData();
-        md.setTo(NAME);
-        byte[] metadata = MetaData.toJsonBytes(md);
-
-        TransportFileMessage m = new TransportFileMessage(metadata, payload);
+        MetaData md = new MetaDataBuilder().withTo(NAME).build();
+        TransportFileMessage m = new TransportFileMessage(md, payload);
         m.setFlags(flags);
 
         return m.writeToNewBuffer();

@@ -34,6 +34,10 @@ public class MetaData {
         this.hash = hash;
     }
 
+    public byte[] toJsonBytes() {
+        return MetaData.toJsonBytes(this);
+    }
+
     public static MetaData fromJsonBytes(byte[] json) {
         String s = new String(json, Charsets.UTF_8);
         return new Gson().fromJson(s, MetaData.class);

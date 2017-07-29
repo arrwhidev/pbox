@@ -1,6 +1,7 @@
 package com.arrwhi.pbox.msg;
 
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
+import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.flags.Flags;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -23,11 +24,11 @@ public class TransportFileMessageTest {
 
     @Test
     public void readFrom() throws Exception {
-        byte[] metadata = randomBytes(16);
+        byte[] metadata = "{}".getBytes();
         byte[] payload = randomBytes(1024);
         ByteBuf source = createValidPayloadMessageBuffer(metadata, payload);
         TransportFileMessage msg = MessageFactory.createTransportFileMessageFromBuffer(source);
-        assertArrayEquals(metadata, msg.getMetaData());
+        assertArrayEquals(metadata, msg.getMetaData().toJsonBytes());
         assertArrayEquals(payload, msg.getPayload());
         assertEquals(msg.getType(), MessageFactory.TRANSPORT_FILE);
         assertEquals(msg.getFlags().getFlags(), 13);
@@ -35,7 +36,7 @@ public class TransportFileMessageTest {
 
     @Test
     public void writeTo() throws Exception {
-        byte[] metadata = randomBytes(16);
+        MetaData metadata = new MetaDataBuilder().withFrom("from").withHash("hash").withTo("to").build();
         byte[] payload = randomBytes(1024);
         TransportFileMessage msg = new TransportFileMessage();
         msg.setFlags(new Flags((byte) 17));
@@ -47,13 +48,17 @@ public class TransportFileMessageTest {
         assertEquals(MessageFactory.TRANSPORT_FILE, buf.readShort());
         assertEquals(17, buf.readByte());
         buf.readInt();
-        byte[] newMetaData = new byte[16];
+        byte[] newMetaData = new byte[metadata.toJsonBytes().length];
         buf.readBytes(newMetaData);
         byte[] newPayload = new byte[1024];
         buf.readBytes(newPayload);
-        assertArrayEquals(metadata, newMetaData);
-        assertArrayEquals(payload,newPayload);
+        assertArrayEquals(payload, newPayload);
         assertEquals(0, buf.readableBytes());
+
+        MetaData metadata2 = MetaData.fromJsonBytes(newMetaData);
+        assertEquals(metadata.getFrom(), metadata2.getFrom());
+        assertEquals(metadata.getTo(), metadata2.getTo());
+        assertEquals(metadata.getHash(), metadata2.getHash());
     }
 
     private ByteBuf createValidPayloadMessageBuffer(byte[] metadata, byte[] payload) {

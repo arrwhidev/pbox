@@ -44,11 +44,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     void handleTransportFile(ByteBuf src, ChannelHandlerContext ctx) {
         try {
             TransportFileMessage msg = MessageFactory.createTransportFileMessageFromBuffer(src);
-            MetaData recvMetaData = MetaData.fromJsonBytes(msg.getMetaData());
-            String path = recvMetaData.getTo();
+            String path = msg.getMetaData().getTo();
             String hash = HashFactory.create(path, msg.getPayload());
 
-            if (recvMetaData.getHash().equals(hash)) {
+            if (msg.getMetaData().getHash().equals(hash)) {
                 if (msg.getFlags().isDirectory()) {
                     writer.createDir(path);
                 } else {
@@ -70,7 +69,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     void handleDeleteFile(ByteBuf src) {
         try {
             DeleteFileMessage msg = MessageFactory.createDeleteMessageFromBuffer(src);
-            String path = MetaData.fromJsonBytes(msg.getMetaData()).getFrom();
+            String path = msg.getMetaData().getFrom();
             writer.delete(path);
         } catch (InvalidMessageTypeException e) {
             e.printStackTrace();

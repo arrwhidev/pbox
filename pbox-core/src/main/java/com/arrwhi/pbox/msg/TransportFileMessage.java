@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.msg;
 
+import com.arrwhi.pbox.json.MetaData;
 import io.netty.buffer.ByteBuf;
 
 /*
@@ -18,7 +19,7 @@ public class TransportFileMessage extends MessageWithMetaData {
         this(null, null);
     }
 
-    public TransportFileMessage(byte[] metadata, byte[] payload) {
+    public TransportFileMessage(MetaData metadata, byte[] payload) {
         super(MessageFactory.TRANSPORT_FILE, metadata);
         this.payload = payload;
     }

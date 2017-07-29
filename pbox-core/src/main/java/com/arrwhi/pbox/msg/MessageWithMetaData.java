@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.msg;
 
+import com.arrwhi.pbox.json.MetaData;
 import io.netty.buffer.ByteBuf;
 
 /*
@@ -11,9 +12,9 @@ import io.netty.buffer.ByteBuf;
  */
 public abstract class MessageWithMetaData extends Message {
 
-    private byte[] metaData;
+    private MetaData metaData;
 
-    public MessageWithMetaData(short type, byte[] metaData) {
+    public MessageWithMetaData(short type, MetaData metaData) {
         super(type);
         this.metaData = metaData;
     }
@@ -21,17 +22,22 @@ public abstract class MessageWithMetaData extends Message {
     public void readFrom(ByteBuf src) {
         super.readFrom(src);
         int metaDataLength = src.readInt();
-        metaData = new byte[metaDataLength];
+        byte[] metaData = new byte[metaDataLength];
         src.readBytes(metaData);
+        this.metaData = MetaData.fromJsonBytes(metaData);
     }
 
     public void writeToNewBuffer(ByteBuf dest) {
         super.writeToNewBuffer(dest);
-        dest.writeInt(metaData.length);
-        dest.writeBytes(metaData);
+
+        byte[] metaDataBytes = MetaData.toJsonBytes(this.metaData);
+        dest.writeInt(metaDataBytes.length);
+        dest.writeBytes(metaDataBytes);
     }
 
-    public byte[] getMetaData() { return metaData; }
-    public void setMetaData(byte[] metaData) { this.metaData = metaData; }
+    public MetaData getMetaData() { return metaData; }
+    public void setMetaData(MetaData metaData) { this.metaData = metaData; }
 
 }
+
+

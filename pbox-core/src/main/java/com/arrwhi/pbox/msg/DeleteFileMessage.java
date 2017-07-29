@@ -1,5 +1,7 @@
 package com.arrwhi.pbox.msg;
 
+import com.arrwhi.pbox.json.MetaData;
+
 /*
  * Delete File Message
  *
@@ -9,7 +11,7 @@ package com.arrwhi.pbox.msg;
  */
 public class DeleteFileMessage extends MessageWithMetaData {
 
-    public DeleteFileMessage(byte[] metaData) {
+    public DeleteFileMessage(MetaData metaData) {
         super(MessageFactory.DELETE_FILE, metaData);
     }
 

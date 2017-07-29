@@ -19,7 +19,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         try {
             // TODO: Handle ack
             TransportFileAckMessage transportFileAck = MessageFactory.createTransportFileAckMessageFromBuffer(src);
-            MetaData md = MetaData.fromJsonBytes(transportFileAck.getMetaData());
+            MetaData md = transportFileAck.getMetaData();
             System.out.println("Got hash: " + md.getHash());
         } catch (InvalidMessageTypeException e) {
             e.printStackTrace();

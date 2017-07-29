@@ -20,22 +20,32 @@ import java.security.NoSuchAlgorithmException;
 public class HashFactory {
 
     private static final String HASH_ALGORITHM = "SHA-256";
+    private static final String DEFAULT_HASH = "could-not-generate";
     private static String SOURCE_DIR;
 
     static {
         SOURCE_DIR = PropertiesHelper.get("sourceDirectory");
     }
 
-    public static String create(File file) throws Exception {
-        String relativePath = PathHelper.getRelativePath(SOURCE_DIR, file.getAbsolutePath());
-
-        byte[] payload = file.isDirectory() ? new byte[0] : readBytes(file);
-        return create(relativePath, payload);
+    public static String create(File file) {
+        try {
+            String relativePath = PathHelper.getRelativePath(SOURCE_DIR, file.getAbsolutePath());
+            byte[] payload = file.isDirectory() ? new byte[0] : readBytes(file);
+            return create(relativePath, payload);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return DEFAULT_HASH;
+        }
     }
 
-    public static String create(String path, byte[] payload) throws Exception {
-        byte[] pathBytes = path.getBytes(Charsets.UTF_8);
-        return create(pathBytes, payload);
+    public static String create(String path, byte[] payload) {
+        try {
+            byte[] pathBytes = path.getBytes(Charsets.UTF_8);
+            return create(pathBytes, payload);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return DEFAULT_HASH;
+        }
     }
 
     /**
