@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.client;
+package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.client.adapters.IndexDifferenceToMessageAdapter;
 import com.arrwhi.pbox.client.factories.MessageFactory;

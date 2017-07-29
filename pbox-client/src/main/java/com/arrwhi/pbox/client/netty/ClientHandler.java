@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.client;
+package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
 import com.arrwhi.pbox.json.MetaData;
