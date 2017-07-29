@@ -1,7 +1,5 @@
 package com.arrwhi.pbox.msg;
 
-import com.arrwhi.pbox.json.MetaData;
-
 /**
  * Created by arran on 29/07/17.
  */

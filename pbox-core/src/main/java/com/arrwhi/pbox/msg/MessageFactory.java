@@ -3,7 +3,6 @@ package com.arrwhi.pbox.msg;
 import com.arrwhi.pbox.crypto.HashFactory;
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
 
-import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.flags.Flags;
 import com.arrwhi.pbox.util.PathHelper;
 import io.netty.buffer.ByteBuf;

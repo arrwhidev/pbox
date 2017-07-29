@@ -1,7 +1,7 @@
 package com.arrwhi.pbox.server;
 
 import com.arrwhi.pbox.RandomTestUtils;
-import com.arrwhi.pbox.json.MetaData;
+import com.arrwhi.pbox.msg.MetaData;
 import com.arrwhi.pbox.msg.MetaDataBuilder;
 import com.arrwhi.pbox.msg.TransportFileMessage;
 import com.arrwhi.pbox.msg.flags.Flags;

@@ -1,7 +1,7 @@
 package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
-import com.arrwhi.pbox.json.MetaData;
+import com.arrwhi.pbox.msg.MetaData;
 import com.arrwhi.pbox.msg.MessageFactory;
 import com.arrwhi.pbox.msg.TransportFileAckMessage;
 import io.netty.buffer.ByteBuf;

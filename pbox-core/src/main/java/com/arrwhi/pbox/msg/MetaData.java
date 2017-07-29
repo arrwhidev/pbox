@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.json;
+package com.arrwhi.pbox.msg;
 
 import org.apache.commons.codec.Charsets;
 

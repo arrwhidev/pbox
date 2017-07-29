@@ -1,6 +1,5 @@
 package com.arrwhi.pbox.msg;
 
-import com.arrwhi.pbox.json.MetaData;
 import io.netty.buffer.ByteBuf;
 
 /*

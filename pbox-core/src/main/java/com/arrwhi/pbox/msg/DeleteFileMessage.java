@@ -1,7 +1,5 @@
 package com.arrwhi.pbox.msg;
 
-import com.arrwhi.pbox.json.MetaData;
-
 /*
  * Delete File Message
  *

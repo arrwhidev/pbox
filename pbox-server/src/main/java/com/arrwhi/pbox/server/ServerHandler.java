@@ -1,7 +1,6 @@
 package com.arrwhi.pbox.server;
 
 import com.arrwhi.pbox.crypto.HashFactory;
-import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

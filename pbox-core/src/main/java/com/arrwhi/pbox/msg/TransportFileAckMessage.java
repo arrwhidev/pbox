@@ -1,7 +1,5 @@
 package com.arrwhi.pbox.msg;
 
-import com.arrwhi.pbox.json.MetaData;
-
 /*
  * Transport File Ack Message
  * 
