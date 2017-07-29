@@ -20,11 +20,14 @@ import java.security.NoSuchAlgorithmException;
 public class HashFactory {
 
     private static final String HASH_ALGORITHM = "SHA-256";
+    private static String SOURCE_DIR;
+
+    static {
+        SOURCE_DIR = PropertiesHelper.get("sourceDirectory");
+    }
 
     public static String create(File file) throws Exception {
-        // TODO: Temporary to test this stuff out - tidy later.
-        String indexRoot = PropertiesHelper.get("sourceDirectory");
-        String relativePath = PathHelper.getRelativePath(indexRoot, file.getAbsolutePath());
+        String relativePath = PathHelper.getRelativePath(SOURCE_DIR, file.getAbsolutePath());
 
         byte[] payload = file.isDirectory() ? new byte[0] : readBytes(file);
         return create(relativePath, payload);

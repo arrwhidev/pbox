@@ -11,17 +11,16 @@ import java.util.Observer;
 public class MessageWriter implements Observer {
 
     private Channel channel;
+    private FileSystemEventToMessageAdapter adapter;
 
     public MessageWriter(Channel channel) {
         this.channel = channel;
+        this.adapter = new FileSystemEventToMessageAdapter(PropertiesHelper.get("sourceDirectory"));
     }
 
     @Override
     public void update(Observable o, Object arg) {
         FileSystemChangeEvent changeEvent = (FileSystemChangeEvent) arg;
-
-        // TODO: Tidy up this sourceDirectory thingy.
-        FileSystemEventToMessageAdapter adapter = new FileSystemEventToMessageAdapter(PropertiesHelper.get("sourceDirectory"));
         Message msg = adapter.adapt(changeEvent.getEvent());
         writeMessage(msg);
     }
