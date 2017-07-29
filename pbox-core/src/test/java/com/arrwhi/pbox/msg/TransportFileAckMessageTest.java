@@ -15,14 +15,14 @@ public class TransportFileAckMessageTest {
     public void shouldThrowException_whenInvalidMessageType() throws Exception {
         ByteBuf source = Unpooled.buffer();
         source.writeShort(999);
-        MessageFactory.createTransportFileAckMessageFrom(source);
+        MessageFactory.createTransportFileAckMessageFromBuffer(source);
         fail("Should have thrown InvalidMessageTypeException.");
     }
 
     @Test
     public void readFrom() throws Exception {
         ByteBuf source = createValidPayloadAckMessageBuffer();
-        TransportFileAckMessage msg = MessageFactory.createTransportFileAckMessageFrom(source);
+        TransportFileAckMessage msg = MessageFactory.createTransportFileAckMessageFromBuffer(source);
         assertEquals(msg.getType(), MessageFactory.TRANSPORT_FILE_ACK);
         assertEquals(msg.getFlags().getFlags(), 13);
     }

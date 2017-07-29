@@ -43,7 +43,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     void handleTransportFile(ByteBuf src, ChannelHandlerContext ctx) {
         try {
-            TransportFileMessage msg = MessageFactory.createTransportFileMessageFrom(src);
+            TransportFileMessage msg = MessageFactory.createTransportFileMessageFromBuffer(src);
             MetaData recvMetaData = MetaData.fromJsonBytes(msg.getMetaData());
             String path = recvMetaData.getTo();
             String hash = HashFactory.create(path, msg.getPayload());
@@ -55,10 +55,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     writer.write(path, msg.getPayload());
                 }
 
-                // TODO: Move metadata conversion into Message!
-                MetaData metadata = new MetaData();
-                metadata.setHash(hash);
-                writeAck(ctx, new TransportFileAckMessage(MetaData.toJsonBytes(metadata)));
+                writeAck(ctx, MessageFactory.createTransportFileAckMessage(hash));
             } else {
                 System.out.println("Invalid hash - throwing away data.");
             }
@@ -72,7 +69,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     // TODO - do not forget to handle the delete a directory scenario.
     void handleDeleteFile(ByteBuf src) {
         try {
-            DeleteFileMessage msg = MessageFactory.createDeleteMessageFrom(src);
+            DeleteFileMessage msg = MessageFactory.createDeleteMessageFromBuffer(src);
             String path = MetaData.fromJsonBytes(msg.getMetaData()).getFrom();
             writer.delete(path);
         } catch (InvalidMessageTypeException e) {

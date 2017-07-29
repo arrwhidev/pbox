@@ -17,7 +17,7 @@ public class TransportFileMessageTest {
     public void shouldThrowException_whenInvalidMessageType() throws Exception {
         ByteBuf source = Unpooled.buffer();
         source.writeShort(999);
-        MessageFactory.createTransportFileMessageFrom(source);
+        MessageFactory.createTransportFileMessageFromBuffer(source);
         fail("Should have thrown InvalidMessageTypeException.");
     }
 
@@ -26,7 +26,7 @@ public class TransportFileMessageTest {
         byte[] metadata = randomBytes(16);
         byte[] payload = randomBytes(1024);
         ByteBuf source = createValidPayloadMessageBuffer(metadata, payload);
-        TransportFileMessage msg = MessageFactory.createTransportFileMessageFrom(source);
+        TransportFileMessage msg = MessageFactory.createTransportFileMessageFromBuffer(source);
         assertArrayEquals(metadata, msg.getMetaData());
         assertArrayEquals(payload, msg.getPayload());
         assertEquals(msg.getType(), MessageFactory.TRANSPORT_FILE);

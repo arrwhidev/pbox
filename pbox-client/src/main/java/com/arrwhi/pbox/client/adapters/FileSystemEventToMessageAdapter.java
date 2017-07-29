@@ -1,8 +1,8 @@
 package com.arrwhi.pbox.client.adapters;
 
-import com.arrwhi.pbox.client.factories.MessageFactory;
 import com.arrwhi.pbox.client.filesystem.DirWatchEvent;
 import com.arrwhi.pbox.msg.Message;
+import com.arrwhi.pbox.msg.MessageFactory;
 
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;

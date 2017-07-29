@@ -1,13 +1,13 @@
 package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.client.adapters.IndexDifferenceToMessageAdapter;
-import com.arrwhi.pbox.client.factories.MessageFactory;
 import com.arrwhi.pbox.client.filesystem.FileSystemIndexer;
 import com.arrwhi.pbox.client.filesystem.FileSystemWatcher;
 import com.arrwhi.pbox.client.index.*;
 import com.arrwhi.pbox.client.index.difference.Difference;
 import com.arrwhi.pbox.client.io.MessageWriter;
 import com.arrwhi.pbox.msg.Message;
+import com.arrwhi.pbox.msg.MessageFactory;
 import com.arrwhi.pbox.util.PropertiesHelper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;

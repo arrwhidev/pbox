@@ -1,8 +1,8 @@
 package com.arrwhi.pbox.client.adapters;
 
-import com.arrwhi.pbox.client.factories.MessageFactory;
 import com.arrwhi.pbox.client.index.difference.Difference;
 import com.arrwhi.pbox.msg.Message;
+import com.arrwhi.pbox.msg.MessageFactory;
 
 /**
  * Created by arran on 25/01/17.
