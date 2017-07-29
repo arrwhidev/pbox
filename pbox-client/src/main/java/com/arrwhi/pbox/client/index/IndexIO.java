@@ -1,7 +1,6 @@
 package com.arrwhi.pbox.client.index;
 
-import com.arrwhi.pbox.json.Json;
-import com.arrwhi.pbox.json.JsonImpl;
+import com.google.gson.Gson;
 import org.apache.commons.codec.Charsets;
 
 import java.io.*;
@@ -13,11 +12,11 @@ import java.nio.file.Paths;
 public class IndexIO {
 
     private String indexPath;
-    private Json json;
+    private Gson gson;
 
     public IndexIO(String path) {
         indexPath = path;
-        json = new JsonImpl();
+        gson = new Gson();
     }
 
     public boolean indexExists() {
@@ -49,11 +48,11 @@ public class IndexIO {
         return fromJSON(json);
     }
 
-    Index fromJSON(String j) {
-        return (Index) json.fromJSON(j, Index.class);
+    Index fromJSON(String json) {
+        return gson.fromJson(json, Index.class);
     }
 
     String toJSON(Index index) {
-        return json.toJSON(index);
+        return gson.toJson(index);
     }
 }

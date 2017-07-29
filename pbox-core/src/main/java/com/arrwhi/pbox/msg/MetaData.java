@@ -6,9 +6,15 @@ import com.google.gson.Gson;
 
 public class MetaData {
 
+    private static final Gson GSON;
+
     private String from;
     private String to;
     private String hash;
+
+    static {
+        GSON = new Gson();
+    }
 
     public String getFrom() {
         return from;
@@ -40,11 +46,11 @@ public class MetaData {
 
     public static MetaData fromJsonBytes(byte[] json) {
         String s = new String(json, Charsets.UTF_8);
-        return new Gson().fromJson(s, MetaData.class);
+        return GSON.fromJson(s, MetaData.class);
     }
-    
+
     public static byte[] toJsonBytes(MetaData md) {
-        String s = new Gson().toJson(md);
+        String s = GSON.toJson(md);
         return s.getBytes(Charsets.UTF_8);
     }
 }
