@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.server;
+package com.arrwhi.pbox.netty;
 
 import com.arrwhi.pbox.CollectingReadChannelHandlerContext;
 import com.arrwhi.pbox.RandomTestUtils;

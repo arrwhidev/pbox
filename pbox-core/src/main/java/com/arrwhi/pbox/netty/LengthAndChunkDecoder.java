@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.server;
+package com.arrwhi.pbox.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

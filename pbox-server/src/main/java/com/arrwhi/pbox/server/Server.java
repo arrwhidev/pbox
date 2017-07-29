@@ -1,5 +1,7 @@
 package com.arrwhi.pbox.server;
 
+import com.arrwhi.pbox.netty.LengthAndChunkDecoder;
+import com.arrwhi.pbox.netty.LengthAndChunkEncoder;
 import com.arrwhi.pbox.util.PropertiesHelper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -38,6 +40,7 @@ public class Server {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(new LengthAndChunkEncoder());
                         ch.pipeline().addLast(new LengthAndChunkDecoder());
                         for (ChannelInboundHandlerAdapter handler : handlers) {
                             ch.pipeline().addLast(handler);

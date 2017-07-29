@@ -1,5 +1,7 @@
 package com.arrwhi.pbox.client;
 
+import com.arrwhi.pbox.netty.LengthAndChunkDecoder;
+import com.arrwhi.pbox.netty.LengthAndChunkEncoder;
 import com.arrwhi.pbox.util.PropertiesHelper;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -34,6 +36,7 @@ public class Client {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new LengthAndChunkEncoder());
+                ch.pipeline().addLast(new LengthAndChunkDecoder());
                 ch.pipeline().addLast(clientHandler);
             }
         });

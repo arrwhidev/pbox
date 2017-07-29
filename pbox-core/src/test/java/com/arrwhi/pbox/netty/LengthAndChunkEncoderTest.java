@@ -1,7 +1,8 @@
-package com.arrwhi.pbox.client;
+package com.arrwhi.pbox.netty;
 
 import com.arrwhi.pbox.CollectingChannelHandlerContext;
 import com.arrwhi.pbox.RandomTestUtils;
+import com.arrwhi.pbox.netty.LengthAndChunkEncoder;
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
 
