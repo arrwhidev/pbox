@@ -8,6 +8,7 @@ public class MetaData {
 
     private String from;
     private String to;
+    private String hash;
 
     public String getFrom() {
         return from;
@@ -23,6 +24,14 @@ public class MetaData {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public static MetaData fromJsonBytes(byte[] json) {
