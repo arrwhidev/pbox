@@ -42,7 +42,8 @@ public class IndexTest {
     @Test
     public void shouldReturnTrue_whenIndexContainsAnEntryWithSameValuesInsideADirectory() throws Exception {
         Index index = new Index(ROOT_DIR);
-        IndexEntry dirEntry = new IndexEntry("dir1", ROOT_DIR + "dir1", "", new ArrayList<>());
+        IndexEntry dirEntry = new IndexEntry("dir1", ROOT_DIR + "dir1", "");
+        dirEntry.setIsDirectory(true);
         dirEntry.setEntries(Arrays.asList(
                 new IndexEntry("file1", ROOT_DIR + "dir1/file1", "hash1")
         ));

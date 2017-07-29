@@ -1,16 +1,17 @@
 package com.arrwhi.pbox.client.factories;
 
+import com.arrwhi.pbox.crypto.HashFactory;
 import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.DeleteFileMessage;
 import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.TransportFileMessage;
 import com.arrwhi.pbox.msg.flags.Flags;
+import com.arrwhi.pbox.util.PathHelper;
 
 import java.io.File;
 import java.io.IOException;
-
-import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.getRelativePath;
-import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.readBytes;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by arran on 25/01/17.
@@ -19,13 +20,19 @@ public class MessageFactory {
 
     public static Message createTransportFileMessage(File f, String rootDir) {
         MetaData metadata = new MetaData();
-        String relative = getRelativePath(rootDir, f.toString());
+        String relative = PathHelper.getRelativePath(rootDir, f.toString());
         metadata.setTo(relative);
+        try {
+            metadata.setHash(HashFactory.create(f));
+        } catch (Exception e) {
+            // TODO: handle this.
+            e.printStackTrace();
+        }
 
         byte[] payload = new byte[0];
         if(!f.isDirectory()) {
             try {
-                payload = readBytes(f);
+                payload = Files.readAllBytes(Paths.get(f.toString()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -39,7 +46,7 @@ public class MessageFactory {
 
     public static Message createDeleteFileMessage(File f, String rootDir) {
         MetaData metadata = new MetaData();
-        String relative = getRelativePath(rootDir, f.toString());
+        String relative = PathHelper.getRelativePath(rootDir, f.toString());
         metadata.setFrom(relative);
 
         return setFlagsOnMessage(

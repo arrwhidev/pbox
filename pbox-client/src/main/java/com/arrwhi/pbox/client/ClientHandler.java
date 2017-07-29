@@ -1,6 +1,7 @@
 package com.arrwhi.pbox.client;
 
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
+import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.MessageFactory;
 import com.arrwhi.pbox.msg.TransportFileAckMessage;
 import io.netty.buffer.ByteBuf;
@@ -16,8 +17,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     private void handleTransportFileAck(ByteBuf src) {
         try {
-            TransportFileAckMessage transportFileAck = MessageFactory.createTransportFileAckMessageFrom(src);
             // TODO: Handle ack
+            TransportFileAckMessage transportFileAck = MessageFactory.createTransportFileAckMessageFrom(src);
+            MetaData md = MetaData.fromJsonBytes(transportFileAck.getMetaData());
+            System.out.println("Got hash: " + md.getHash());
         } catch (InvalidMessageTypeException e) {
             e.printStackTrace();
         }

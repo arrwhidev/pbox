@@ -7,8 +7,6 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
-import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.createIndexEntry;
-
 /**
  * Created by arran on 17/01/2017.
  */
@@ -28,7 +26,7 @@ public class IndexUpdater implements Observer {
         File file = changeEvent.getEvent().path.toFile();
 
         try {
-            IndexEntry indexEntry = createIndexEntry(file);
+            IndexEntry indexEntry = IndexEntryFactory.create(file);
             index.add(indexEntry);
 
             // TODO - IndexIO.write!

@@ -1,7 +1,8 @@
 package com.arrwhi.pbox.client.filesystem;
 
 import com.arrwhi.pbox.client.adapters.FileSystemEventToMessageAdapter;
-import com.arrwhi.pbox.msg.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
  */
 public class FileSystemWatcher extends Observable implements Runnable {
 
+    private Logger logger = LogManager.getLogger();
     private Path rootDir;
     private WatchService watcher;
     private List<DirBeingWatched> directoriesBeingWatched;
@@ -53,19 +55,18 @@ public class FileSystemWatcher extends Observable implements Runnable {
                 }
             }
 
-            System.out.println("----\nNum changes found: " + events.size());
+            logger.info("Num changes found: " + events.size());
             for (DirWatchEvent event : events) {
                 Kind<?> kind = event.kind;
                 if(kind == OVERFLOW) {
-                    System.err.println("FileSystemWatcher - OVERFLOW");
+                    logger.error("FileSystemWatcher - OVERFLOW");
                     continue;
                 } else {
                     // Seems to be a weird bug here (on linux, need to test on OSX).
                     // event.path.toFile().isDirectory() returns false when it is a directory.
-                    System.out.println(event.kind.name() + " - isDirectory:" + event.path.toFile().isDirectory());
+                    logger.info(event.kind.name() + " - isDirectory:" + event.path.toFile().isDirectory());
 
-                    Message msg = eventToMessageAdapter.adapt(event);
-                    if (msg != null) {
+                    if (event.kind == ENTRY_CREATE || event.kind == ENTRY_MODIFY || event.kind == ENTRY_DELETE) {
                         if (event.kind.equals(ENTRY_CREATE) && event.path.toFile().isDirectory()) {
                             register(event.path.toFile());
                         } else if (event.kind.equals(ENTRY_DELETE) && event.path.toFile().isDirectory()) {
@@ -73,7 +74,7 @@ public class FileSystemWatcher extends Observable implements Runnable {
                         }
 
                         setChanged();
-                        notifyObservers(new FileSystemChangeEvent(event, msg));
+                        notifyObservers(new FileSystemChangeEvent(event));
                     }
                 }
             }
@@ -86,13 +87,22 @@ public class FileSystemWatcher extends Observable implements Runnable {
                 // TODO: make the poll time customisable from properties.
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                System.err.println("Interrupted!");
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * Register directories to watch.
+     */
     private void register(File f) {
+        if (!f.isDirectory()) {
+            logger.info(String.format("Not registering [%s] because it is not a directory.", f.getAbsoluteFile()));
+            return;
+        } else {
+            logger.info(String.format("Registering directory [%s]", f.getAbsoluteFile()));
+        }
+
         Path p = f.toPath();
         try {
             DirBeingWatched dirToWatch = new DirBeingWatched();

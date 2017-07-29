@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.server;
 
+import com.arrwhi.pbox.crypto.HashFactory;
 import com.arrwhi.pbox.json.MetaData;
 import com.arrwhi.pbox.msg.*;
 import io.netty.buffer.ByteBuf;
@@ -29,8 +30,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         switch(messageType) {
             case MessageFactory.TRANSPORT_FILE:
-                handleTransportFile((ByteBuf) msg);
-                writeAck(ctx, new TransportFileAckMessage());
+                handleTransportFile((ByteBuf) msg, ctx);
                 break;
             case MessageFactory.DELETE_FILE:
                 handleDeleteFile((ByteBuf) msg);
@@ -41,16 +41,30 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    void handleTransportFile(ByteBuf src) {
+    void handleTransportFile(ByteBuf src, ChannelHandlerContext ctx) {
         try {
             TransportFileMessage msg = MessageFactory.createTransportFileMessageFrom(src);
-            String path = MetaData.fromJsonBytes(msg.getMetaData()).getTo();
-            if (msg.getFlags().isDirectory()) {
-                writer.createDir(path);
+            MetaData recvMetaData = MetaData.fromJsonBytes(msg.getMetaData());
+            String path = recvMetaData.getTo();
+            String hash = HashFactory.create(path, msg.getPayload());
+
+            if (recvMetaData.getHash().equals(hash)) {
+                if (msg.getFlags().isDirectory()) {
+                    writer.createDir(path);
+                } else {
+                    writer.write(path, msg.getPayload());
+                }
+
+                // TODO: Move metadata conversion into Message!
+                MetaData metadata = new MetaData();
+                metadata.setHash(hash);
+                writeAck(ctx, new TransportFileAckMessage(MetaData.toJsonBytes(metadata)));
             } else {
-                writer.write(path, msg.getPayload());
+                System.out.println("Invalid hash - throwing away data.");
             }
         } catch (InvalidMessageTypeException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -67,6 +81,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void writeAck(ChannelHandlerContext ctx, Message ack) {
-        ctx.writeAndFlush(ack);
+        ctx.writeAndFlush(ack.writeToNewBuffer());
     }
 }

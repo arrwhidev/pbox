@@ -1,6 +1,5 @@
 package com.arrwhi.pbox.client;
 
-import com.arrwhi.pbox.client.adapters.FileSystemEventToMessageAdapter;
 import com.arrwhi.pbox.client.adapters.IndexDifferenceToMessageAdapter;
 import com.arrwhi.pbox.client.factories.MessageFactory;
 import com.arrwhi.pbox.client.filesystem.FileSystemIndexer;

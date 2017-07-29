@@ -31,7 +31,7 @@ public class ServerHandlerTest {
         Flags flags = new Flags();
         flags.setIsDirectory(true);
 
-        handler.handleTransportFile(transportFileMessageWithPayload(new byte[0], flags));
+        handler.handleTransportFile(transportFileMessageWithPayload(new byte[0], flags), null);
         verify(writer, times(1)).createDir(NAME);
     }
 
@@ -39,7 +39,7 @@ public class ServerHandlerTest {
     public void shouldCreateFile_whenTransportFileMessageIsNotDirectory_andHasZeroLengthPayload() throws Exception {
         ServerHandler handler = new ServerHandler(writer);
         final byte[] payload = RandomTestUtils.randomBytes(0);
-        handler.handleTransportFile(transportFileMessageWithPayload(payload, new Flags()));
+        handler.handleTransportFile(transportFileMessageWithPayload(payload, new Flags()), null);
         verify(writer, times(1)).write(NAME, payload);
     }
 
@@ -47,7 +47,7 @@ public class ServerHandlerTest {
     public void shouldCreateFile_whenTransportFileMessageIsNotDirectory() throws Exception {
         final byte[] payload = RandomTestUtils.randomBytes(16);
         ServerHandler handler = new ServerHandler(writer);
-        handler.handleTransportFile(transportFileMessageWithPayload(payload, new Flags()));
+        handler.handleTransportFile(transportFileMessageWithPayload(payload, new Flags()), null);
         verify(writer, times(1)).write(NAME, payload);
     }
 

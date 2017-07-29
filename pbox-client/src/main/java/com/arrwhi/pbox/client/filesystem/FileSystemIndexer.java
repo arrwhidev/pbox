@@ -2,6 +2,7 @@ package com.arrwhi.pbox.client.filesystem;
 
 import com.arrwhi.pbox.client.index.Index;
 import com.arrwhi.pbox.client.index.IndexEntry;
+import com.arrwhi.pbox.client.index.IndexEntryFactory;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -9,11 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.arrwhi.pbox.client.filesystem.FileSystemUtils.*;
-
 public class FileSystemIndexer {
-
-    private static final String DIR_HASH = "";
 
     private final Path basePath;
     private Index index;
@@ -33,21 +30,12 @@ public class FileSystemIndexer {
 
     private List<IndexEntry> generateInitialIndex(final File folder, List<IndexEntry> entries) {
         for (final File file : folder.listFiles()) {
-            String name = file.getName();
-            String path = file.getAbsolutePath();
-
-            // TODO - FileSystemUtils.createIndexEntry for when isDirectory
-
             if (file.isDirectory()) {
                 List<IndexEntry> nestedEntries = new ArrayList<>();
                 generateInitialIndex(file, nestedEntries);
-                entries.add(new IndexEntry(name, path, DIR_HASH, nestedEntries));
+                entries.add(IndexEntryFactory.create(file, nestedEntries));
             } else {
-                try {
-                    entries.add(createIndexEntry(file));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                entries.add(IndexEntryFactory.create(file));
             }
         }
 
