@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -61,5 +62,31 @@ public class IndexTest {
         index.add(new IndexEntry("a2", ROOT_DIR + "a2", "hash2"));
 
         assertThat(index.containsEntry(new IndexEntry("ASD!D", ROOT_DIR + "a1", "hash1")), equalTo(false));
+    }
+
+    @Test
+    public void getByHash_shouldReturnIndexEntryWithMatchingHash() throws Exception {
+        IndexEntry ie1 = new IndexEntry("1", "/1", "hash1");
+        IndexEntry ie2 = new IndexEntry("2", "/2", "hash2");
+        Index index = new Index(ROOT_DIR, Arrays.asList(ie1, ie2));
+
+        IndexEntry found = index.getByHash("hash2");
+        assertThat(found, is(notNullValue()));
+        assertThat(found.equals(ie2), is(true));
+    }
+
+    @Test
+    public void getByHash_shouldReturnIndexEntryWithMatchingHash_whenNested() throws Exception {
+        IndexEntry ie1 = new IndexEntry("1", "/1", "hash1");
+        IndexEntry ie2 = new IndexEntry("2", "/2", "hash2");
+        IndexEntry ie3 = new IndexEntry("3", "/3", "hash3");
+        IndexEntry ie4 = new IndexEntry("4", "/4", "hash4");
+        ie1.setEntries(Arrays.asList(ie3));
+        ie2.setEntries(Arrays.asList(ie4));
+        Index index = new Index(ROOT_DIR, Arrays.asList(ie1, ie2));
+
+        IndexEntry found = index.getByHash("hash4");
+        assertThat(found, is(notNullValue()));
+        assertThat(found.equals(ie4), is(true));
     }
 }

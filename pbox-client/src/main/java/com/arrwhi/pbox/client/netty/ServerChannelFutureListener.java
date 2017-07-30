@@ -58,10 +58,10 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
         Index newIndex = new Index(sourceDir);
         FileSystemIndexer fileSystemIndexer = new FileSystemIndexer(newIndex);
         fileSystemIndexer.buildIndex();
+        indexIO.write(newIndex);
 
         if (indexExists) {
             Index oldIndex = indexIO.read();
-
             IndexComparator indexComparator = new IndexComparator(oldIndex, newIndex);
             if(!indexComparator.areEqual()) {
                 System.out.println("Num differences since last time: " + indexComparator.getDifferences().size());
@@ -72,8 +72,6 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
         } else {
             writeIndexEntries(newIndex.getEntries(), messageWriter);
         }
-
-        indexIO.write(newIndex);
 
         return newIndex;
     }

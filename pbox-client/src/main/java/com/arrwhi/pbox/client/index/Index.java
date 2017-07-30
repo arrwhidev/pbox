@@ -29,6 +29,26 @@ public class Index {
         return entries.isEmpty();
     }
 
+    public IndexEntry getByHash(String hash) {
+        return getByHash(hash, entries);
+    }
+
+    private IndexEntry getByHash(String hash, List<IndexEntry> entries) {
+        for (IndexEntry ie : entries) {
+            if (ie.getHash().equals(hash)) {
+                return ie;
+            }
+
+            if (ie.getEntries() != null) {
+                IndexEntry nestedIe = getByHash(hash, ie.getEntries());
+                if (nestedIe != null) {
+                    return nestedIe;
+                }
+            }
+        }
+        return null;
+    }
+
     public void add(IndexEntry indexEntry) {
         entries.add(indexEntry);
     }
