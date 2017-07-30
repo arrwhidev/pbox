@@ -29,8 +29,15 @@ public class Index {
         return entries.isEmpty();
     }
 
-    public IndexEntry getByHash(String hash) {
-        return getByHash(hash, entries);
+    public IndexEntry getByHash(String hash) throws IndexEntryNotFoundException {
+        IndexEntry ie = getByHash(hash, entries);
+        if (ie == null) {
+            throw new IndexEntryNotFoundException(
+                String.format("Did not find IndexEntry with hash: %s", hash)
+            );
+        }
+
+        return ie;
     }
 
     private IndexEntry getByHash(String hash, List<IndexEntry> entries) {

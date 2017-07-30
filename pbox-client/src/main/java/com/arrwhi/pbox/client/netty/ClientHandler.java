@@ -2,6 +2,7 @@ package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.client.index.Index;
 import com.arrwhi.pbox.client.index.IndexEntry;
+import com.arrwhi.pbox.client.index.IndexEntryNotFoundException;
 import com.arrwhi.pbox.client.index.IndexIO;
 import com.arrwhi.pbox.exception.InvalidMessageTypeException;
 import com.arrwhi.pbox.msg.metadata.MetaData;
@@ -13,6 +14,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
+
+    private IndexIO indexio;
+
+    public ClientHandler() {
+        indexio = new IndexIO(PropertiesHelper.get("indexFilePath"));
+    }
     
     public void channelRead(final ChannelHandlerContext ctx, Object msg) {
         // TODO: handle different acks.
@@ -23,15 +30,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         try {
             TransportFileAckMessage transportFileAck = MessageFactory.createTransportFileAckMessageFromBuffer(src);
             MetaData md = transportFileAck.getMetaData();
-            IndexIO io = new IndexIO(PropertiesHelper.get("indexFilePath"));
-            Index index = io.read();
-            IndexEntry ie = index.getByHash(md.getHash());
 
-            if(ie != null) {
+            // TODO: Need a singleton Index wrapper so we do not do read it every time.
+            Index index = indexio.read();
+            try {
+                IndexEntry ie = index.getByHash(md.getHash());
                 ie.setSynced(true);
-                io.write(index);
-            } else {
-                System.err.println("Did not find IndexEntry with hash: " + md.getHash());
+                indexio.write(index);
+            } catch (IndexEntryNotFoundException e) {
+                e.printStackTrace();
             }
         } catch (InvalidMessageTypeException e) {
             e.printStackTrace();
