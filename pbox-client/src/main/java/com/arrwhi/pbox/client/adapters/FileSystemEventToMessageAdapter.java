@@ -21,8 +21,8 @@ public class FileSystemEventToMessageAdapter {
     }
 
     public Message adapt(DirWatchEvent ev) {
-        Path p = ev.path;
-        WatchEvent.Kind<?> kind = ev.kind;
+        Path p = ev.getPath();
+        WatchEvent.Kind<?> kind = ev.getKind();
         if(kind == ENTRY_CREATE) {
             return MessageFactory.createTransportFileMessage(p.toFile(), rootDir);
         } else if(kind == ENTRY_MODIFY) {

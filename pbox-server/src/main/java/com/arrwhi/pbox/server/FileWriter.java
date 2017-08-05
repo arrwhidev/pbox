@@ -38,6 +38,7 @@ public class FileWriter {
             Files.delete(p);
         } catch (IOException e) {
             System.err.println("Error when deleting: " + path + " - " + e.getMessage());
+            e.printStackTrace();
         }
     }
     

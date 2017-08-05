@@ -7,6 +7,20 @@ import java.nio.file.WatchEvent;
  * Created by arran on 14/01/17.
  */
 public class DirWatchEvent {
-    public WatchEvent.Kind<?> kind;
-    public Path path;
+
+    private WatchEvent.Kind<?> kind;
+    private Path path;
+
+    public DirWatchEvent(WatchEvent.Kind<?> kind, Path path) {
+        this.kind = kind;
+        this.path = path;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public WatchEvent.Kind<?> getKind() {
+        return kind;
+    }
 }

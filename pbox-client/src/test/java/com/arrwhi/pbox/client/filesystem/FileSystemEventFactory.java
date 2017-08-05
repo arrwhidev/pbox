@@ -33,11 +33,6 @@ public class FileSystemEventFactory {
         Path mockedPath = mock(Path.class);
         when(mockedPath.toFile()).thenReturn(mockedFile);
 
-        DirWatchEvent ev = new DirWatchEvent();
-        ev.kind = kind;
-        ev.path = mockedPath;
-        return ev;
+        return new DirWatchEvent(kind, mockedPath);
     }
-
-
 }
