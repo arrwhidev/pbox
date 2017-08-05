@@ -1,6 +1,5 @@
 package com.arrwhi.pbox.client.index;
 
-import com.arrwhi.pbox.client.filesystem.FileSystemIndexer;
 import com.arrwhi.pbox.util.PropertiesHelper;
 
 /**

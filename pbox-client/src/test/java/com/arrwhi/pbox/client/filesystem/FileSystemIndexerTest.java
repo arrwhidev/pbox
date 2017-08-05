@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.client.filesystem;
 
+import com.arrwhi.pbox.client.index.FileSystemIndexer;
 import com.arrwhi.pbox.client.index.Index;
 import com.arrwhi.pbox.client.index.IndexEntry;
 import org.junit.Test;

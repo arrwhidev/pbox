@@ -1,7 +1,7 @@
 package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.client.adapters.IndexDifferenceToMessageAdapter;
-import com.arrwhi.pbox.client.filesystem.FileSystemIndexer;
+import com.arrwhi.pbox.client.index.FileSystemIndexer;
 import com.arrwhi.pbox.client.filesystem.FileSystemWatcher;
 import com.arrwhi.pbox.client.index.*;
 import com.arrwhi.pbox.client.index.difference.Difference;

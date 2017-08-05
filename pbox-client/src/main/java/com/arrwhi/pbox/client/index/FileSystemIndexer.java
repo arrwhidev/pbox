@@ -1,8 +1,4 @@
-package com.arrwhi.pbox.client.filesystem;
-
-import com.arrwhi.pbox.client.index.Index;
-import com.arrwhi.pbox.client.index.IndexEntry;
-import com.arrwhi.pbox.client.index.IndexEntryFactory;
+package com.arrwhi.pbox.client.index;
 
 import java.io.File;
 import java.nio.file.Path;
