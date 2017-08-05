@@ -1,6 +1,6 @@
 package com.arrwhi.pbox.client.adapters;
 
-import com.arrwhi.pbox.client.filesystem.DirWatchEvent;
+import com.arrwhi.pbox.client.filesystem.FileSystemChangeEvent;
 import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.MessageFactory;
 
@@ -20,7 +20,7 @@ public class FileSystemEventToMessageAdapter {
         this.rootDir = rootDir;
     }
 
-    public Message adapt(DirWatchEvent ev) {
+    public Message adapt(FileSystemChangeEvent ev) {
         Path p = ev.getPath();
         WatchEvent.Kind<?> kind = ev.getKind();
         if(kind == ENTRY_CREATE) {

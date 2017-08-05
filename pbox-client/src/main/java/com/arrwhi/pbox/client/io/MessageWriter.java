@@ -20,8 +20,7 @@ public class MessageWriter implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        FileSystemChangeEvent changeEvent = (FileSystemChangeEvent) arg;
-        Message msg = adapter.adapt(changeEvent.getEvent());
+        Message msg = adapter.adapt((FileSystemChangeEvent) arg);
         writeMessage(msg);
     }
 

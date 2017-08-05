@@ -27,8 +27,8 @@ public class IndexUpdater implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         FileSystemChangeEvent changeEvent = (FileSystemChangeEvent) arg;
-        if (changeEvent.getEvent().getKind().equals(ENTRY_CREATE)) {
-            File file = changeEvent.getEvent().getPath().toFile();
+        if (changeEvent.getKind().equals(ENTRY_CREATE)) {
+            File file = changeEvent.getPath().toFile();
 
             try {
                 IndexEntry indexEntry = IndexEntryFactory.create(file);
@@ -37,9 +37,9 @@ public class IndexUpdater implements Observer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (changeEvent.getEvent().getKind().equals(ENTRY_MODIFY)) {
+        } else if (changeEvent.getKind().equals(ENTRY_MODIFY)) {
             // TODO: Do we need to update the index if entry is modified? Could this be a rename event?
-        } else if (changeEvent.getEvent().getKind().equals(ENTRY_DELETE)) {
+        } else if (changeEvent.getKind().equals(ENTRY_DELETE)) {
             // TODO: Remove from index if deleted.
         }
     }

@@ -11,21 +11,23 @@ import static org.mockito.Mockito.when;
 /**
  * Created by arran on 15/01/17.
  */
-public class FileSystemEventFactory {
+public class FileSystemChangeEventFactory {
 
-    public static DirWatchEvent fsCreateEvent(String filename, boolean isDirectory) {
+    private FileSystemChangeEventFactory() {}
+
+    public static FileSystemChangeEvent fsCreateEvent(String filename, boolean isDirectory) {
         return fsEvent(filename, isDirectory, StandardWatchEventKinds.ENTRY_CREATE);
     }
 
-    public static DirWatchEvent fsModifyEvent(String filename, boolean isDirectory) {
+    public static FileSystemChangeEvent fsModifyEvent(String filename, boolean isDirectory) {
         return fsEvent(filename, isDirectory, StandardWatchEventKinds.ENTRY_MODIFY);
     }
 
-    public static DirWatchEvent fsDeleteEvent(String filename, boolean isDirectory) {
+    public static FileSystemChangeEvent fsDeleteEvent(String filename, boolean isDirectory) {
         return fsEvent(filename, isDirectory, StandardWatchEventKinds.ENTRY_DELETE);
     }
 
-    private static DirWatchEvent fsEvent(String filename, boolean isDirectory, WatchEvent.Kind kind) {
+    private static FileSystemChangeEvent fsEvent(String filename, boolean isDirectory, WatchEvent.Kind kind) {
         File mockedFile = mock(File.class);
         when(mockedFile.isDirectory()).thenReturn(isDirectory);
         when(mockedFile.toString()).thenReturn(filename);
@@ -33,6 +35,6 @@ public class FileSystemEventFactory {
         Path mockedPath = mock(Path.class);
         when(mockedPath.toFile()).thenReturn(mockedFile);
 
-        return new DirWatchEvent(kind, mockedPath);
+        return new FileSystemChangeEvent(kind, mockedPath);
     }
 }

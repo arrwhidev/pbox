@@ -20,14 +20,14 @@ public class FileSystemEventToMessageAdapterTest {
 
     @Test
     public void shouldReturnTransportFileMessage_whenCreateEvent_andIsNotDirectory() throws Exception {
-        DirWatchEvent ev = FileSystemEventFactory.fsCreateEvent(ROOT_DIR + "/testing/hello.gif", false);
+        FileSystemChangeEvent ev = FileSystemChangeEventFactory.fsCreateEvent(ROOT_DIR + "/testing/hello.gif", false);
         Message msg = new FileSystemEventToMessageAdapter(ROOT_DIR).adapt(ev);
         assertThat(msg, is(instanceOf(TransportFileMessage.class)));
     }
 
     @Test
     public void shouldReturnTransportFileMessageWithZeroBytePayload_whenCreateEvent_andIsDirectory() throws Exception {
-        DirWatchEvent ev = FileSystemEventFactory.fsCreateEvent(ROOT_DIR + "/testing", true);
+        FileSystemChangeEvent ev = FileSystemChangeEventFactory.fsCreateEvent(ROOT_DIR + "/testing", true);
         Message msg = new FileSystemEventToMessageAdapter(ROOT_DIR).adapt(ev);
         assertThat(msg, is(instanceOf(TransportFileMessage.class)));
         assertThat(((TransportFileMessage) msg).getPayload().length, is(0));
@@ -35,21 +35,21 @@ public class FileSystemEventToMessageAdapterTest {
 
     @Test
     public void shouldReturnNull_whenModifyEvent() throws Exception {
-        DirWatchEvent ev = FileSystemEventFactory.fsModifyEvent(ROOT_DIR + "/testing", true);
+        FileSystemChangeEvent ev = FileSystemChangeEventFactory.fsModifyEvent(ROOT_DIR + "/testing", true);
         Message msg = new FileSystemEventToMessageAdapter(ROOT_DIR).adapt(ev);
         assertThat(msg, is(nullValue()));
     }
 
     @Test
     public void shouldReturnNull_whenDeleteEvent_andIsDirectory() throws Exception {
-        DirWatchEvent ev = FileSystemEventFactory.fsDeleteEvent(ROOT_DIR + "/testing", true);
+        FileSystemChangeEvent ev = FileSystemChangeEventFactory.fsDeleteEvent(ROOT_DIR + "/testing", true);
         Message msg = new FileSystemEventToMessageAdapter(ROOT_DIR).adapt(ev);
         assertThat(msg, is(nullValue()));
     }
 
     @Test
     public void shouldReturnDeleteFileMessage_whenDeleteEvent_andIsDirectory() throws Exception {
-        DirWatchEvent ev = FileSystemEventFactory.fsDeleteEvent(ROOT_DIR + "/testing", false);
+        FileSystemChangeEvent ev = FileSystemChangeEventFactory.fsDeleteEvent(ROOT_DIR + "/testing", false);
         Message msg = new FileSystemEventToMessageAdapter(ROOT_DIR).adapt(ev);
         assertThat(msg, is(instanceOf(DeleteFileMessage.class)));
     }

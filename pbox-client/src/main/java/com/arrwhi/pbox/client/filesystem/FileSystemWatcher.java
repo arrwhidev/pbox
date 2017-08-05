@@ -43,19 +43,19 @@ public class FileSystemWatcher extends Observable implements Runnable {
             register(f);
         }
 
-        List<DirWatchEvent> events = new ArrayList<>();
+        List<FileSystemChangeEvent> events = new ArrayList<>();
         isWatching = true;
         while(isWatching) {
             for(DirBeingWatched dir : directoriesBeingWatched) {
                 for(WatchEvent<?> e : dir.getKey().pollEvents()) {
-                    DirWatchEvent event = new DirWatchEvent(e.kind(), Paths.get(dir.getPath().toString(), ((WatchEvent<Path>)e).context().toString()));
+                    FileSystemChangeEvent event = new FileSystemChangeEvent(e.kind(), Paths.get(dir.getPath().toString(), ((WatchEvent<Path>)e).context().toString()));
                     events.add(event);
                 }
             }
 
             logger.info("Num changes found: " + events.size());
 
-            for (DirWatchEvent event : events) {
+            for (FileSystemChangeEvent event : events) {
                 Kind<?> kind = event.getKind();
                 if(kind == OVERFLOW) {
                     logger.error("FileSystemWatcher - OVERFLOW");
@@ -71,7 +71,7 @@ public class FileSystemWatcher extends Observable implements Runnable {
                     }
 
                     setChanged();
-                    notifyObservers(new FileSystemChangeEvent(event));
+                    notifyObservers(event);
                 }
             }
 
