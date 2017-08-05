@@ -12,11 +12,11 @@ import static java.nio.file.StandardWatchEventKinds.*;
 /**
  * Created by arran on 10/07/16.
  */
-public class FileSystemEventToMessageAdapter {
+public class FileSystemChangeEventToMessageAdapter {
 
     private final String rootDir;
 
-    public FileSystemEventToMessageAdapter(String rootDir) {
+    public FileSystemChangeEventToMessageAdapter(String rootDir) {
         this.rootDir = rootDir;
     }
 

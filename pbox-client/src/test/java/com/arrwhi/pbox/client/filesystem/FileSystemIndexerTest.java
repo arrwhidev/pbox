@@ -1,9 +1,7 @@
 package com.arrwhi.pbox.client.filesystem;
 
-import com.arrwhi.pbox.client.adapters.FileSystemEventToMessageAdapter;
 import com.arrwhi.pbox.client.index.Index;
 import com.arrwhi.pbox.client.index.IndexEntry;
-import com.arrwhi.pbox.client.io.MessageWriter;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
