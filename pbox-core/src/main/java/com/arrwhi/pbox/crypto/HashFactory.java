@@ -27,6 +27,8 @@ public class HashFactory {
         SOURCE_DIR = PropertiesHelper.get("sourceDirectory");
     }
 
+    private HashFactory() {}
+
     public static String create(File file) {
         try {
             String relativePath = PathHelper.getRelativePath(SOURCE_DIR, file.getAbsolutePath());

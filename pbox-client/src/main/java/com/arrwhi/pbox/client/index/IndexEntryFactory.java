@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class IndexEntryFactory {
 
+    private IndexEntryFactory() {}
+
     public static IndexEntry create(File file) {
         String name = file.getName();
         String path = file.getAbsolutePath();

@@ -12,6 +12,8 @@ public class PropertiesHelper {
     private final static String PROPERTIES_FILENAME = "application.properties";
     private static Properties PROPERTIES;
 
+    private PropertiesHelper() {}
+
     public static String get(String prop) {
         if(PROPERTIES == null) {
             loadProperties();

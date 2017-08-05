@@ -8,6 +8,8 @@ import java.nio.file.Paths;
  */
 public class PathHelper {
 
+    private PathHelper() {}
+
     public static String getRelativePath(String rootDir, String absolutePath) {
         Path bPath = Paths.get(rootDir);
         Path absPath = Paths.get(absolutePath);

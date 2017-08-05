@@ -21,6 +21,8 @@ public class MessageFactory {
     public static final short DELETE_FILE = 2;
     public static final short DELETE_FILE_ACK = 3;
 
+    private MessageFactory() {}
+
     public static TransportFileMessage createTransportFileMessageFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
         checkMessageType(MessageFactory.TRANSPORT_FILE, src);
         TransportFileMessage msg = new TransportFileMessage();

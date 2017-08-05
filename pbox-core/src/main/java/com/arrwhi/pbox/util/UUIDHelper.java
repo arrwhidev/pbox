@@ -8,6 +8,8 @@ import java.util.UUID;
  */
 public class UUIDHelper {
 
+    private UUIDHelper() {}
+
     public static UUID create() {
         return UUID.randomUUID();
     }
