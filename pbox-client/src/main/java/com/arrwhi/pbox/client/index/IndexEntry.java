@@ -46,7 +46,7 @@ public class IndexEntry {
         return isDirectory;
     }
 
-    public void setIsDirectory(boolean directory) {
+    void setIsDirectory(boolean directory) {
         isDirectory = directory;
     }
 
@@ -54,7 +54,7 @@ public class IndexEntry {
         return entries;
     }
 
-    public void setEntries(List<IndexEntry> entries) {
+    void setEntries(List<IndexEntry> entries) {
         this.entries = entries;
     }
 
@@ -62,7 +62,7 @@ public class IndexEntry {
         return isSynced;
     }
 
-    public void setSynced(boolean synced) {
+    void setSynced(boolean synced) {
         isSynced = synced;
     }
 

@@ -9,11 +9,11 @@ import com.arrwhi.pbox.client.io.MessageWriter;
 import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.MessageFactory;
 import com.arrwhi.pbox.util.PropertiesHelper;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,6 +22,7 @@ import java.util.List;
 public class ServerChannelFutureListener implements ChannelFutureListener {
 
     private final String sourceDir;
+    private Logger logger = LogManager.getLogger();
 
     public ServerChannelFutureListener() {
         this.sourceDir = PropertiesHelper.get("sourceDirectory");
@@ -29,22 +30,12 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
 
     @Override
     public void operationComplete(ChannelFuture future) {
-        System.out.println("Connected to server!");
+        logger.info("Connected to server!");
 
-        try {
-            handleConnectionSuccess(future.channel());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void handleConnectionSuccess(Channel channel) throws IOException {
-        final MessageWriter messageWriter = new MessageWriter(channel);
-
-        Index index = setupIndex(messageWriter);
-        IndexUpdater indexUpdater = new IndexUpdater(index);
-
-        FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sourceDir);
+        final MessageWriter messageWriter = new MessageWriter(future.channel());
+        final Index index = setupIndex(messageWriter);
+        final IndexUpdater indexUpdater = new IndexUpdater(index);
+        final FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sourceDir);
         fileSystemWatcher.addObserver(indexUpdater);
         fileSystemWatcher.addObserver(messageWriter);
 
@@ -52,11 +43,10 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
     }
 
     private Index setupIndex(MessageWriter messageWriter) {
-        IndexIO indexIO = new IndexIO(PropertiesHelper.get("indexFilePath"));
+        final IndexIO indexIO = new IndexIO(PropertiesHelper.get("indexFilePath"));
         final boolean indexExists = indexIO.indexExists();
-
-        Index newIndex = new Index(sourceDir);
-        FileSystemIndexer fileSystemIndexer = new FileSystemIndexer(newIndex);
+        final Index newIndex = new Index(sourceDir);
+        final FileSystemIndexer fileSystemIndexer = new FileSystemIndexer(newIndex);
         fileSystemIndexer.buildIndex();
         indexIO.write(newIndex);
 
@@ -64,10 +54,10 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
             Index oldIndex = indexIO.read();
             IndexComparator indexComparator = new IndexComparator(oldIndex, newIndex);
             if(!indexComparator.areEqual()) {
-                System.out.println("Num differences since last time: " + indexComparator.getDifferences().size());
+                logger.trace("Num differences since last time: " + indexComparator.getDifferences().size());
                 writeDifferences(indexComparator.getDifferences(), messageWriter);
             } else {
-                System.out.println("No differences since last time.");
+                logger.trace("No differences since last time.");
             }
         } else {
             writeIndexEntries(newIndex.getEntries(), messageWriter);

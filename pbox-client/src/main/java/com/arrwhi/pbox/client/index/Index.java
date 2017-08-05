@@ -32,9 +32,7 @@ public class Index {
     public IndexEntry getByHash(String hash) throws IndexEntryNotFoundException {
         IndexEntry ie = getByHash(hash, entries);
         if (ie == null) {
-            throw new IndexEntryNotFoundException(
-                String.format("Did not find IndexEntry with hash: %s", hash)
-            );
+            throw new IndexEntryNotFoundException(hash);
         }
 
         return ie;

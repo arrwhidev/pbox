@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * Created by arran on 22/01/2017.
  */
-// TODO - Implement MOVED/RENAMED (deleted and added with same hash).
 
+// TODO - Implement MOVED/RENAMED (deleted and added with same hash).
 public class IndexComparator {
 
     private List<Difference> differences;

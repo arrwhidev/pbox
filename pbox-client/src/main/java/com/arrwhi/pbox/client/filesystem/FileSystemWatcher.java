@@ -26,11 +26,17 @@ public class FileSystemWatcher extends Observable implements Runnable {
     private List<DirBeingWatched> directoriesBeingWatched;
     private boolean isWatching;
 
-    public FileSystemWatcher(String rootDir) throws IOException {
+    public FileSystemWatcher(String rootDir) {
         this.isWatching = false;
         this.rootDir = Paths.get(rootDir);
         this.directoriesBeingWatched = new ArrayList<>();
-        this.watcher = FileSystems.getDefault().newWatchService();
+
+        try {
+            this.watcher = FileSystems.getDefault().newWatchService();
+        } catch (IOException e) {
+            logger.error("Failed to create FileSystemWatcher. " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void stop() {
