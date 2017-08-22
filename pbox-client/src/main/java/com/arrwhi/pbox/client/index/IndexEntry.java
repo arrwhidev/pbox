@@ -8,12 +8,12 @@ import java.util.List;
 public class IndexEntry {
 
     private String name;
-    private String filePath; 
+    private String filePath;
     private String hash;
     private boolean isDirectory;
     private boolean isSynced;
     private List<IndexEntry> entries;
-    
+
     public IndexEntry(String name, String filePath, String hash) {
         this.name = name;
         this.filePath = filePath;
@@ -37,11 +37,11 @@ public class IndexEntry {
     public String getFilePath() {
         return filePath;
     }
-    
+
     public String getHash() {
         return hash;
     }
-    
+
     public boolean isDirectory() {
         return isDirectory;
     }
@@ -72,12 +72,14 @@ public class IndexEntry {
         return String.format("%s %s:%s", fileOrDir, filePath, hash);
     }
 
-    public boolean equals(IndexEntry e) {
+    @Override
+    public boolean equals(Object o) {
+        IndexEntry e = (IndexEntry) o;
         return
             this.name.equals(e.getName()) &&
             this.filePath.equals(e.getFilePath()) &&
             this.hash.equals(e.getHash());
     }
 
-    // TODO - hashCode()
+    // TODO: hashcode
 }

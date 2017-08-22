@@ -12,7 +12,6 @@ import java.io.IOException;
 import static com.arrwhi.pbox.client.TestUtils.getEntryWithName;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by arran on 14/01/17
@@ -23,9 +22,7 @@ public class FileSystemIndexerTest {
     public void shouldGenerateInitialIndex_whenIndexIsEmpty() throws Exception {
         File rootDir = givenADirectoryWithFiles();
         File nestedDir = givenDirectoryWithFilesInsideDirectory(rootDir);
-
-        Index index = new Index(rootDir.getAbsolutePath());
-        new FileSystemIndexer(index).buildIndex();
+        Index index = FileSystemIndexer.buildIndex(rootDir.getAbsolutePath());
 
         assertThat(index.getEntries().size(), is(3));
 
@@ -59,9 +56,7 @@ public class FileSystemIndexerTest {
     @Test
     public void shouldSetHashToEmptyString_whenDirectory() throws Exception {
         File rootDir = givenADirectoryWithAFolder();
-
-        Index index = new Index(rootDir.getAbsolutePath());
-        new FileSystemIndexer(index).buildIndex();
+        Index index = FileSystemIndexer.buildIndex(rootDir.getAbsolutePath());
 
         IndexEntry folder = getEntryWithName(index.getEntries(), "folder");
         assertThat(folder.getHash(), is(""));

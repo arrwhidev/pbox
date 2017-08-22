@@ -1,4 +1,4 @@
-package com.arrwhi.pbox.client.io;
+package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.client.adapters.FileSystemChangeEventToMessageAdapter;
 import com.arrwhi.pbox.client.filesystem.FileSystemChangeEvent;

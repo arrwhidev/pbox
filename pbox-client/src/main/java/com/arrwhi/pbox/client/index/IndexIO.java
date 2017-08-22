@@ -1,40 +1,58 @@
 package com.arrwhi.pbox.client.index;
 
+import com.arrwhi.pbox.util.PropertiesHelper;
 import com.google.gson.Gson;
 import org.apache.commons.codec.Charsets;
 
 import java.io.*;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Class responsible for reading/writing from/to the index file.
+ */
 public class IndexIO {
 
-    private String indexPath;
+    private final String sourceDirectory;
+    private final String indexFilePath;
     private Gson gson;
 
-    public IndexIO(String path) {
-        indexPath = path;
+    public IndexIO() {
+        indexFilePath = PropertiesHelper.get("indexFilePath");
+        sourceDirectory = PropertiesHelper.get("sourceDirectory");
         gson = new Gson();
     }
 
     public boolean indexExists() {
-        Path indexFile = FileSystems.getDefault().getPath(indexPath);
-        return indexFile.toFile().exists();
+        Path p = Paths.get(indexFilePath);
+        return p.toFile().exists();
     }
 
     public void write(Index index) {
         String json = toJSON(index);
+        FileOutputStream fos = null;
+        PrintStream ps = null;
+
         try {
-            new PrintStream(new FileOutputStream(indexPath)).print(json);
+            fos = new FileOutputStream(indexFilePath);
+            ps = new PrintStream(fos);
+            ps.print(json);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            ps.close();
+
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public Index read() {
-        Path p = Paths.get(indexPath);
+        Path p = Paths.get(indexFilePath);
         String json = null;
         try {
             json = Files.readAllLines(p, Charsets.UTF_8)

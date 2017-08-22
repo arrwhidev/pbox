@@ -5,7 +5,6 @@ import com.arrwhi.pbox.client.index.FileSystemIndexer;
 import com.arrwhi.pbox.client.filesystem.FileSystemWatcher;
 import com.arrwhi.pbox.client.index.*;
 import com.arrwhi.pbox.client.index.difference.Difference;
-import com.arrwhi.pbox.client.io.MessageWriter;
 import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.MessageFactory;
 import com.arrwhi.pbox.util.PropertiesHelper;
@@ -43,11 +42,9 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
     }
 
     private Index setupIndex(MessageWriter messageWriter) {
-        final IndexIO indexIO = new IndexIO(PropertiesHelper.get("indexFilePath"));
+        final IndexIO indexIO = new IndexIO();
         final boolean indexExists = indexIO.indexExists();
-        final Index newIndex = new Index(sourceDir);
-        final FileSystemIndexer fileSystemIndexer = new FileSystemIndexer(newIndex);
-        fileSystemIndexer.buildIndex();
+        final Index newIndex = FileSystemIndexer.buildIndex();
         indexIO.write(newIndex);
 
         if (indexExists) {

@@ -21,7 +21,7 @@ public class IndexUpdater implements Observer {
 
     public IndexUpdater(Index index) {
         this.index = index;
-        this.indexIO = new IndexIO(PropertiesHelper.get("indexFilePath"));
+        this.indexIO = new IndexIO();
     }
 
     @Override

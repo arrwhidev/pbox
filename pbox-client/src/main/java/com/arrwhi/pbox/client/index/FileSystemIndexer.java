@@ -1,5 +1,7 @@
 package com.arrwhi.pbox.client.index;
 
+import com.arrwhi.pbox.util.PropertiesHelper;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,23 +10,28 @@ import java.util.List;
 
 public class FileSystemIndexer {
 
-    private final Path basePath;
-    private Index index;
+    private static final String SOURCE_DIR = PropertiesHelper.get("sourceDirectory");
 
-    public FileSystemIndexer(Index index) {
-        this.basePath = Paths.get(index.getRootDir());
-        this.index = index;
-    }
+    private FileSystemIndexer() {}
 
-    public void buildIndex() {
+    public static Index buildIndex(String path) {
+        Index index = new Index(path);
+        Path basePath = Paths.get(path);
+
         if (index.isEmpty()) {
             List<IndexEntry> initialEntries = new ArrayList<>();
             generateInitialIndex(basePath.toFile(), initialEntries);
             index.addAll(initialEntries);
         }
+
+        return index;
     }
 
-    private List<IndexEntry> generateInitialIndex(final File folder, List<IndexEntry> entries) {
+    public static Index buildIndex() {
+        return buildIndex(SOURCE_DIR);
+    }
+
+    private static List<IndexEntry> generateInitialIndex(final File folder, List<IndexEntry> entries) {
         for (final File file : folder.listFiles()) {
             if (file.isDirectory()) {
                 List<IndexEntry> nestedEntries = new ArrayList<>();
@@ -36,9 +43,5 @@ public class FileSystemIndexer {
         }
 
         return entries;
-    }
-
-    public Index getIndex() {
-        return this.index;
     }
 }
