@@ -40,7 +40,7 @@ public class IndexUpdater implements Observer {
         } else if (changeEvent.getKind().equals(ENTRY_MODIFY)) {
             // TODO: Do we need to update the index if entry is modified? Could this be a rename event?
         } else if (changeEvent.getKind().equals(ENTRY_DELETE)) {
-            // TODO: Remove from index if deleted.
+            // TODO: Do nothing, we will delete from index when we get DELETE_MSG_ACK from server as confirmation.
         }
     }
 }

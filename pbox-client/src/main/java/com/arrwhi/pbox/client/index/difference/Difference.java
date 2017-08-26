@@ -22,4 +22,9 @@ public class Difference {
     public IndexEntry getEntry() {
         return entry;
     }
+
+    @Override
+    public String toString() {
+        return "[" + type + "] " + entry.getFilePath();
+    }
 }

@@ -33,7 +33,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 break;
             case MessageFactory.DELETE_FILE:
                 handleDeleteFile((ByteBuf) msg);
-                writeAck(ctx, new DeleteFileAckMessage());
                 break;
             default:
                 System.out.println("Unexpected message type:" + messageType);
@@ -69,7 +68,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         try {
             DeleteFileMessage msg = MessageFactory.createDeleteMessageFromBuffer(src);
             String path = msg.getMetaData().getFrom();
-            writer.delete(path);
+            // Update logic;
+            //   Delete differently file vs directory?
+            //   Throw away if does not exist.
+            //   Write Ack! writeAck(ctx, new DeleteFileAckMessage());
+
+//            writer.delete(path);
         } catch (InvalidMessageTypeException e) {
             e.printStackTrace();
         }
