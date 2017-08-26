@@ -6,6 +6,7 @@ import com.arrwhi.pbox.msg.Message;
 import com.arrwhi.pbox.msg.MessageFactory;
 import com.arrwhi.pbox.util.PropertiesHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,16 @@ public enum IndexService {
     IndexService() {
         indexio = new IndexIO();
         sourceDirectory = PropertiesHelper.get("sourceDirectory");
+    }
+
+    public synchronized void add(File file) {
+        try {
+            IndexEntry indexEntry = IndexEntryFactory.create(file);
+            index.add(indexEntry);
+            indexio.write(index);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Message> load() {
