@@ -33,7 +33,7 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
             messageWriter.writeMessage(msg);
         }
 
-        final IndexUpdater indexUpdater = new IndexUpdater(IndexService.INSTANCE.index());
+        final IndexUpdater indexUpdater = new IndexUpdater();
         final FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sourceDir);
         fileSystemWatcher.addObserver(indexUpdater);
         fileSystemWatcher.addObserver(messageWriter);
