@@ -3,6 +3,7 @@ package com.arrwhi.pbox.client.index;
 import com.arrwhi.pbox.crypto.HashFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +17,12 @@ public class IndexEntryFactory {
         String name = file.getName();
         String path = file.getAbsolutePath();
         String hashString = HashFactory.create(file);
-        return new IndexEntry(name, path, hashString);
+        IndexEntry ie = new IndexEntry(name, path, hashString);
+        ie.setIsDirectory(file.isDirectory());
+        if (ie.isDirectory()) {
+            ie.setEntries(new ArrayList<>());
+        }
+        return ie;
     }
 
     public static IndexEntry create(File file, List<IndexEntry> entries) {

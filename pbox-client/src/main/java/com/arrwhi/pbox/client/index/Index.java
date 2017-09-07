@@ -38,6 +38,16 @@ public class Index {
         return ie;
     }
 
+    public IndexEntry getByPath(String path) throws IndexEntryNotFoundException {
+        final String fullPath = rootDir + "/" + path;
+        IndexEntry ie = getByPath(fullPath, entries);
+        if (ie == null) {
+            throw new IndexEntryNotFoundException(fullPath);
+        }
+
+        return ie;
+    }
+
     private IndexEntry getByHash(String hash, List<IndexEntry> entries) {
         for (IndexEntry ie : entries) {
             if (ie.getHash().equals(hash)) {
@@ -54,8 +64,30 @@ public class Index {
         return null;
     }
 
+    private IndexEntry getByPath(String path, List<IndexEntry> entries) {
+        for (IndexEntry ie : entries) {
+            if (ie.getFilePath().equals(path)) {
+                return ie;
+            }
+
+            if (ie.getEntries() != null) {
+                IndexEntry nestedIe = getByPath(path, ie.getEntries());
+                if (nestedIe != null) {
+                    return nestedIe;
+                }
+            }
+        }
+        return null;
+    }
+
     public void add(IndexEntry indexEntry) {
-        entries.add(indexEntry);
+        if ((rootDir + "/" + indexEntry.getName()).equals(indexEntry.getFilePath())) {
+            entries.add(indexEntry);
+        } else {
+            final String parentDirectory = indexEntry.getFilePath().substring(0, indexEntry.getFilePath().indexOf(indexEntry.getName()) - 1);
+            IndexEntry parentIndexEntry = getByPath(parentDirectory, entries);
+            parentIndexEntry.getEntries().add(indexEntry);
+        }
     }
 
     public void addAll(List<IndexEntry> initialEntries) {

@@ -43,8 +43,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private void handleDeleteFileAck(ByteBuf src) {
         try {
             DeleteFileAckMessage deleteFileAck = MessageFactory.createDeleteMessageAckFromBuffer(src);
-//            MetaData md = deleteFileAck.getMetaData();
-//            IndexService.INSTANCE.confirmDeleteFileDelivery(md.getHash());
+            String path = deleteFileAck.getMetaData().getFrom();
+            IndexService.INSTANCE.confirmDeleteFileDelivery(path);
         } catch (InvalidMessageTypeException e) {
             e.printStackTrace();
         }

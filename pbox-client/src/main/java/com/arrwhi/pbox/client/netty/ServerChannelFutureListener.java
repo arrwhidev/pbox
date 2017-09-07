@@ -27,9 +27,9 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
     public void operationComplete(ChannelFuture future) {
         logger.info("Connected to server!");
 
-        final List<Message> messageToWriteToServer = IndexService.INSTANCE.load();
+        final List<Message> messagesToWriteToServer = IndexService.INSTANCE.load();
         final MessageWriter messageWriter = new MessageWriter(future.channel());
-        for (Message msg : messageToWriteToServer) {
+        for (Message msg : messagesToWriteToServer) {
             messageWriter.writeMessage(msg);
         }
 
@@ -37,6 +37,8 @@ public class ServerChannelFutureListener implements ChannelFutureListener {
         final FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(sourceDir);
         fileSystemWatcher.addObserver(indexUpdater);
         fileSystemWatcher.addObserver(messageWriter);
-        new Thread(fileSystemWatcher).start();
+
+        final Thread fileSystemWatcherThread = new Thread(fileSystemWatcher);
+        fileSystemWatcherThread.start();
     }
 }

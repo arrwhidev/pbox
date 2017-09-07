@@ -62,6 +62,11 @@ public class MessageFactory {
         return new TransportFileAckMessage(metadata);
     }
 
+    public static DeleteFileAckMessage createDeleteFileAckMessage(String path) {
+        MetaData metadata = new MetaDataBuilder().withFrom(path).build();
+        return new DeleteFileAckMessage(metadata);
+    }
+
     public static DeleteFileMessage createDeleteMessageFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
         checkMessageType(MessageFactory.DELETE_FILE, src);
         DeleteFileMessage msg = new DeleteFileMessage();

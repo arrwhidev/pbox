@@ -12,6 +12,7 @@ public class IndexEntry {
     private String hash;
     private boolean isDirectory;
     private boolean isSynced;
+    private boolean isDeleted;
     private List<IndexEntry> entries;
 
     public IndexEntry(String name, String filePath, String hash) {
@@ -20,6 +21,7 @@ public class IndexEntry {
         this.hash = hash;
         this.isDirectory = false;
         this.isSynced = false;
+        this.isDeleted = false;
     }
 
     public File getAsFile() {
@@ -64,6 +66,14 @@ public class IndexEntry {
 
     void setSynced(boolean synced) {
         isSynced = synced;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     @Override

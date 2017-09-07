@@ -111,19 +111,17 @@ public enum IndexService {
             ie.setSynced(true);
             indexio.write(index);
         } catch (IndexEntryNotFoundException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
-    public synchronized void confirmDeleteFileDelivery(String hash) {
-//        try {
-//            IndexEntry ie = index.getByHash(hash);
-//            ie.setSynced(true);
-//            indexio.write(index);
-//        } catch (IndexEntryNotFoundException e) {
-//            e.printStackTrace();
-//        }
-        // TODO:
-        // Delete from index!
+    public synchronized void confirmDeleteFileDelivery(String path) {
+        try {
+            IndexEntry ie = index.getByPath(path);
+            ie.setDeleted(true);
+            indexio.write(index);
+        } catch (IndexEntryNotFoundException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
