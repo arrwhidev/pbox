@@ -30,7 +30,7 @@ public class Server {
         f.channel().closeFuture().sync();
     }
 
-    public ChannelFuture start(int port, FileWriter writer) throws Exception {
+    private ChannelFuture start(int port, FileWriter writer) throws Exception {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         ServerBootstrap b = new ServerBootstrap();
