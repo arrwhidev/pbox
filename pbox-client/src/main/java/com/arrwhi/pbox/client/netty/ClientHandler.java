@@ -1,53 +1,43 @@
 package com.arrwhi.pbox.client.netty;
 
 import com.arrwhi.pbox.client.index.IndexService;
-import com.arrwhi.pbox.exception.InvalidMessageTypeException;
-import com.arrwhi.pbox.msg.DeleteFileAckMessage;
+import com.arrwhi.pbox.msg.*;
 import com.arrwhi.pbox.msg.metadata.MetaData;
-import com.arrwhi.pbox.msg.MessageFactory;
-import com.arrwhi.pbox.msg.TransportFileAckMessage;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import static com.arrwhi.pbox.netty.PipelineAttributes.MESSAGE_TYPE;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-    public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        ByteBuf src = (ByteBuf) msg;
-        short messageType = src.readShort();
-        src.resetReaderIndex();
+    private static Logger LOGGER = LogManager.getLogger();
 
-        switch(messageType) {
-            case MessageFactory.TRANSPORT_FILE_ACK:
-                handleTransportFileAck(src);
+    public void channelRead(final ChannelHandlerContext ctx, Object msg) {
+        MessageType type = ctx.channel().attr(MESSAGE_TYPE).get();
+
+        switch (type) {
+            case TRANSPORT_FILE_ACK:
+                handleTransportFileAck((TransportFileAckMessage) msg);
                 break;
-            case MessageFactory.DELETE_FILE_ACK:
-                handleDeleteFileAck(src);
+            case DELETE_FILE_ACK:
+                handleDeleteFileAck((DeleteFileAckMessage) msg);
                 break;
             default:
-                System.out.println("Unexpected message type:" + messageType);
+                LOGGER.error("Received an unsupported MessageType: " + type);
         }
     }
 
-    private void handleTransportFileAck(ByteBuf src) {
-        try {
-            TransportFileAckMessage transportFileAck = MessageFactory.createTransportFileAckMessageFromBuffer(src);
-            MetaData md = transportFileAck.getMetaData();
-            IndexService.INSTANCE.confirmTransportFileDelivery(md.getHash());
-        } catch (InvalidMessageTypeException e) {
-            e.printStackTrace();
-        }
+    private void handleTransportFileAck(TransportFileAckMessage msg) {
+        MetaData md = msg.getMetaData();
+        IndexService.INSTANCE.confirmTransportFileDelivery(md.getHash());
     }
 
-    private void handleDeleteFileAck(ByteBuf src) {
-        try {
-            DeleteFileAckMessage deleteFileAck = MessageFactory.createDeleteMessageAckFromBuffer(src);
-            String path = deleteFileAck.getMetaData().getFrom();
-            IndexService.INSTANCE.confirmDeleteFileDelivery(path);
-        } catch (InvalidMessageTypeException e) {
-            e.printStackTrace();
-        }
+    private void handleDeleteFileAck(DeleteFileAckMessage msg) {
+        String path = msg.getMetaData().getFrom();
+        IndexService.INSTANCE.confirmDeleteFileDelivery(path);
     }
 
     @Override

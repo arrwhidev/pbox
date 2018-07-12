@@ -14,7 +14,7 @@ public abstract class MessageWithMetaData extends Message {
 
     private MetaData metaData;
 
-    public MessageWithMetaData(short type, MetaData metaData) {
+    public MessageWithMetaData(MessageType type, MetaData metaData) {
         super(type);
         this.metaData = metaData;
     }

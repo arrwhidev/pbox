@@ -15,15 +15,15 @@ public class TransportFileAckMessageTest {
     public void shouldThrowException_whenInvalidMessageType() throws Exception {
         ByteBuf source = Unpooled.buffer();
         source.writeShort(999);
-        MessageFactory.createTransportFileAckMessageFromBuffer(source);
+        MessageFactory.fromBuffer(source, MessageType.TRANSPORT_FILE_ACK);
         fail("Should have thrown InvalidMessageTypeException.");
     }
 
     @Test
     public void readFrom() throws Exception {
         ByteBuf source = createValidPayloadAckMessageBuffer();
-        TransportFileAckMessage msg = MessageFactory.createTransportFileAckMessageFromBuffer(source);
-        assertEquals(msg.getType(), MessageFactory.TRANSPORT_FILE_ACK);
+        TransportFileAckMessage msg = (TransportFileAckMessage) MessageFactory.fromBuffer(source, MessageType.TRANSPORT_FILE_ACK);
+        assertEquals(msg.getType(), MessageType.TRANSPORT_FILE_ACK);
         assertEquals(msg.getFlags().getFlags(), 13);
     }
 
@@ -34,13 +34,13 @@ public class TransportFileAckMessageTest {
         ByteBuf buf = Unpooled.buffer();
         msg.writeToNewBuffer(buf);
 
-        assertEquals(MessageFactory.TRANSPORT_FILE_ACK, buf.readShort());
+        assertEquals(MessageType.TRANSPORT_FILE_ACK.getType(), buf.readShort());
         assertEquals(17, buf.readByte());
     }
 
     private ByteBuf createValidPayloadAckMessageBuffer() {
         ByteBuf buf = Unpooled.buffer();
-        buf.writeShort(MessageFactory.TRANSPORT_FILE_ACK);
+        buf.writeShort(MessageType.TRANSPORT_FILE_ACK.getType());
         buf.writeByte((byte) 13); // random byte to represent flags.
         return buf;
     }

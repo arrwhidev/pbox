@@ -2,14 +2,17 @@ package com.arrwhi.pbox.server;
 
 import com.arrwhi.pbox.crypto.HashFactory;
 import com.arrwhi.pbox.msg.*;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import com.arrwhi.pbox.exception.InvalidMessageTypeException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import static com.arrwhi.pbox.netty.PipelineAttributes.MESSAGE_TYPE;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
+    private static Logger LOGGER = LogManager.getLogger();
     private FileWriter writer;
 
     public ServerHandler(FileWriter writer) {
@@ -18,62 +21,63 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        LOGGER.error("Error caught: " + cause.getMessage());
         cause.printStackTrace();
         ctx.close();
     }
 
-    public void channelRead(final ChannelHandlerContext ctx, Object msg) {
-        ByteBuf src = (ByteBuf) msg;
-        short messageType = src.readShort();
-        src.resetReaderIndex();
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) {
+        LOGGER.info("Client connected.");
+    }
 
-        switch(messageType) {
-            case MessageFactory.TRANSPORT_FILE:
-                handleTransportFile((ByteBuf) msg, ctx);
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        LOGGER.info("Client disconnected.");
+    }
+
+    public void channelRead(final ChannelHandlerContext ctx, Object msg) {
+        MessageType type = ctx.channel().attr(MESSAGE_TYPE).get();
+
+        switch (type) {
+            case TRANSPORT_FILE:
+                handleTransportFile((TransportFileMessage) msg, ctx);
                 break;
-            case MessageFactory.DELETE_FILE:
-                handleDeleteFile((ByteBuf) msg, ctx);
+            case DELETE_FILE:
+                handleDeleteFile((DeleteFileMessage) msg, ctx);
                 break;
             default:
-                System.out.println("Unexpected message type:" + messageType);
+                LOGGER.error("Received an unsupported MessageType: " + type);
         }
     }
 
-    void handleTransportFile(ByteBuf src, ChannelHandlerContext ctx) {
-        try {
-            TransportFileMessage msg = MessageFactory.createTransportFileMessageFromBuffer(src);
-            String path = msg.getMetaData().getTo();
-            String hash = HashFactory.create(path, msg.getPayload());
+    void handleTransportFile(TransportFileMessage msg, ChannelHandlerContext ctx) {
+        String path = msg.getMetaData().getTo();
+        String hash = HashFactory.create(path, msg.getPayload());
 
-            if (msg.getMetaData().getHash().equals(hash)) {
-                if (msg.getFlags().isDirectory()) {
-                    writer.createDir(path);
-                } else {
-                    writer.write(path, msg.getPayload());
-                }
-
-                writeAck(ctx, MessageFactory.createTransportFileAckMessage(hash));
+        if (msg.getMetaData().getHash().equals(hash)) {
+            if (msg.getFlags().isDirectory()) {
+                writer.createDir(path);
             } else {
-                System.out.println("Invalid hash - throwing away data.");
+                writer.write(path, msg.getPayload());
             }
-        } catch (InvalidMessageTypeException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            writeAck(ctx, MessageFactory.createTransportFileAckMessage(hash));
+        } else {
+            LOGGER.error("Invalid hash - throwing away data.");
         }
     }
 
     // TODO - do not forget to handle the delete a directory scenario.
-    void handleDeleteFile(ByteBuf src, ChannelHandlerContext ctx) {
-        try {
-            DeleteFileMessage msg = MessageFactory.createDeleteMessageFromBuffer(src);
-            String path = msg.getMetaData().getFrom();
+    void handleDeleteFile(DeleteFileMessage msg, ChannelHandlerContext ctx) {
+        String path = msg.getMetaData().getFrom();
 
-            writer.delete(path);
-            writeAck(ctx, MessageFactory.createDeleteFileAckMessage(path));
-        } catch (InvalidMessageTypeException e) {
-            e.printStackTrace();
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("RECV [DeleteFileMessage] Path=" + path);
         }
+
+        writer.delete(path);
+        writeAck(ctx, MessageFactory.createDeleteFileAckMessage(path));
     }
 
     private void writeAck(ChannelHandlerContext ctx, Message ack) {

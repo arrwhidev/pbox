@@ -20,7 +20,7 @@ public class TransportFileMessage extends MessageWithMetaData {
     }
 
     public TransportFileMessage(MetaData metadata, byte[] payload) {
-        super(MessageFactory.TRANSPORT_FILE, metadata);
+        super(MessageType.TRANSPORT_FILE, metadata);
         this.payload = payload;
     }
     

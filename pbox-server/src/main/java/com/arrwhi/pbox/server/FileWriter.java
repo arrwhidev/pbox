@@ -1,12 +1,17 @@
 package com.arrwhi.pbox.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileWriter {
-    
+
+    private static Logger LOGGER = LogManager.getLogger();
     private String rootDirectory;
     
     public FileWriter(String dir) {
@@ -19,7 +24,7 @@ public class FileWriter {
         try {
             Files.write(newFile, data);
         } catch (IOException e) {
-            System.err.println("Error when writing: " + path + " - " + e.getMessage());
+            LOGGER.error("Error when writing: " + path + " - " + e.getMessage());
         }
     }
 
@@ -28,7 +33,11 @@ public class FileWriter {
         try {
             Files.createDirectory(newFile);
         } catch (IOException e) {
-            System.err.println("Error when creating dir: " + path + " - " + e.getMessage());
+            if (e instanceof FileAlreadyExistsException) {
+                LOGGER.error("Error when creating dir: " + path + " Directory already exists!");
+            } else {
+                LOGGER.error("Error when creating dir: " + path + " - " + e.getMessage());
+            }
         }
     }
 
@@ -37,7 +46,7 @@ public class FileWriter {
         try {
             Files.delete(p);
         } catch (IOException e) {
-            System.err.println("Error when deleting: " + path + " - " + e.getMessage());
+            LOGGER.error("Error when deleting: " + path + " - " + e.getMessage());
         }
     }
     

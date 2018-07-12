@@ -14,6 +14,6 @@ public class TransportFileAckMessage extends MessageWithMetaData {
         this(null);
     }
     public TransportFileAckMessage(MetaData metadata) {
-        super(MessageFactory.TRANSPORT_FILE_ACK, metadata);
+        super(MessageType.TRANSPORT_FILE_ACK, metadata);
     }
 }

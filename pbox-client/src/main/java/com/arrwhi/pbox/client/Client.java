@@ -2,8 +2,7 @@ package com.arrwhi.pbox.client;
 
 import com.arrwhi.pbox.client.netty.ClientHandler;
 import com.arrwhi.pbox.client.netty.ServerChannelFutureListener;
-import com.arrwhi.pbox.netty.LengthAndChunkDecoder;
-import com.arrwhi.pbox.netty.LengthAndChunkEncoder;
+import com.arrwhi.pbox.netty.*;
 import com.arrwhi.pbox.util.PropertiesHelper;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -39,6 +38,9 @@ public class Client {
             public void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new LengthAndChunkEncoder());
                 ch.pipeline().addLast(new LengthAndChunkDecoder());
+                ch.pipeline().addLast(new MessageTypeDecoder());
+//                ch.pipeline().addLast(new InboundMessageLogger());
+//                ch.pipeline().addLast(new OutboundMessageLogger());
                 ch.pipeline().addLast(clientHandler);
             }
         });

@@ -8,27 +8,34 @@ import com.arrwhi.pbox.msg.metadata.MetaData;
 import com.arrwhi.pbox.msg.metadata.MetaDataBuilder;
 import com.arrwhi.pbox.util.PathHelper;
 import io.netty.buffer.ByteBuf;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class MessageFactory {
-    
-    public static final short TRANSPORT_FILE = 0;
-    public static final short TRANSPORT_FILE_ACK = 1;
-    public static final short DELETE_FILE = 2;
-    public static final short DELETE_FILE_ACK = 3;
+import static com.arrwhi.pbox.msg.MessageType.DELETE_FILE;
 
+public class MessageFactory {
+
+    private static Logger LOGGER = LogManager.getLogger();
+    
     private MessageFactory() {}
 
-    public static TransportFileMessage createTransportFileMessageFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
-        checkMessageType(MessageFactory.TRANSPORT_FILE, src);
-        TransportFileMessage msg = new TransportFileMessage();
-        msg.readFrom(src);
-        return msg;
+    public static Message fromBuffer(ByteBuf buf, MessageType type) {
+        try {
+            Message message = type.getClazz().newInstance();
+            message.readFrom(buf);
+            return message;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
+    ////////////////////////
 
     public static Message createTransportFileMessage(File f, String rootDir) {
         String relative = PathHelper.getRelativePath(rootDir, f.toString());
@@ -50,13 +57,6 @@ public class MessageFactory {
         );
     }
 
-    public static TransportFileAckMessage createTransportFileAckMessageFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
-        checkMessageType(MessageFactory.TRANSPORT_FILE_ACK, src);
-        TransportFileAckMessage msg = new TransportFileAckMessage();
-        msg.readFrom(src);
-        return msg;
-    }
-
     public static TransportFileAckMessage createTransportFileAckMessage(String hash) {
         MetaData metadata = new MetaDataBuilder().withHash(hash).build();
         return new TransportFileAckMessage(metadata);
@@ -65,13 +65,6 @@ public class MessageFactory {
     public static DeleteFileAckMessage createDeleteFileAckMessage(String path) {
         MetaData metadata = new MetaDataBuilder().withFrom(path).build();
         return new DeleteFileAckMessage(metadata);
-    }
-
-    public static DeleteFileMessage createDeleteMessageFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
-        checkMessageType(MessageFactory.DELETE_FILE, src);
-        DeleteFileMessage msg = new DeleteFileMessage();
-        msg.readFrom(src);
-        return msg;
     }
 
     public static Message createDeleteFileMessage(File f, String rootDir) {
@@ -84,41 +77,19 @@ public class MessageFactory {
         );
     }
 
-    public static DeleteFileAckMessage createDeleteMessageAckFromBuffer(ByteBuf src) throws InvalidMessageTypeException {
-        checkMessageType(MessageFactory.DELETE_FILE_ACK, src);
-        DeleteFileAckMessage msg = new DeleteFileAckMessage();
-        msg.readFrom(src);
-        return msg;
-    }
-
     // TODO...
     public static Message createModifyFileMessage(File f, String rootDir) {
         return null;
     }
 
-    public static String getMessageTypeAsString(short type) {
-        switch(type) {
-            case MessageFactory.TRANSPORT_FILE:
-                return "TRANSPORT_FILE";
-            case MessageFactory.TRANSPORT_FILE_ACK:
-                return "TRANSPORT_FILE_ACK";
-            case MessageFactory.DELETE_FILE:
-                return "DELETE_FILE";
-            case MessageFactory.DELETE_FILE_ACK:
-                return "DELETE_FILE_ACK";
-            default:
-                return "Unexpected type";
-        }
-    }
-
-    private static void checkMessageType(short expectedType, ByteBuf src) throws InvalidMessageTypeException {
-        short type = src.readShort();
-        src.resetReaderIndex();
-        if(expectedType != type) {
-            String msg = String.format("Invalid message type. Expected %d got %d", expectedType, type);
-            throw new InvalidMessageTypeException(msg);
-        }
-    }
+//    private static void checkMessageType(MessageType expectedType, ByteBuf src) throws InvalidMessageTypeException {
+//        short type = src.readShort();
+//        src.resetReaderIndex();
+//        if(expectedType.getType() != type) {
+//            String msg = String.format("Invalid message type. Expected %d got %d", expectedType.getType(), type);
+//            throw new InvalidMessageTypeException(msg);
+//        }
+//    }
 
     private static Message setFlagsOnMessage(Message msg, boolean isDirectory) {
         Flags flags = new Flags();

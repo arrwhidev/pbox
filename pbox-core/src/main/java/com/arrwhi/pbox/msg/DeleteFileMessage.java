@@ -12,7 +12,7 @@ import com.arrwhi.pbox.msg.metadata.MetaData;
 public class DeleteFileMessage extends MessageWithMetaData {
 
     public DeleteFileMessage(MetaData metaData) {
-        super(MessageFactory.DELETE_FILE, metaData);
+        super(MessageType.DELETE_FILE, metaData);
     }
 
     public DeleteFileMessage() {

@@ -16,7 +16,7 @@ public class LengthAndChunkDecoder extends ChannelInboundHandlerAdapter {
     ByteBuf data;
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf buf = (ByteBuf) msg;
 
         while (buf.readableBytes() > 0) {

@@ -14,6 +14,6 @@ public class DeleteFileAckMessage extends MessageWithMetaData {
         this(null);
     }
     public DeleteFileAckMessage(MetaData metadata) {
-        super(MessageFactory.DELETE_FILE_ACK, metadata);
+        super(MessageType.DELETE_FILE_ACK, metadata);
     }
 }

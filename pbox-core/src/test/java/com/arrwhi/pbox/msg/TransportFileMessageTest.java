@@ -19,7 +19,7 @@ public class TransportFileMessageTest {
     public void shouldThrowException_whenInvalidMessageType() throws Exception {
         ByteBuf source = Unpooled.buffer();
         source.writeShort(999);
-        MessageFactory.createTransportFileMessageFromBuffer(source);
+        MessageFactory.fromBuffer(source, MessageType.TRANSPORT_FILE);
         fail("Should have thrown InvalidMessageTypeException.");
     }
 
@@ -28,10 +28,10 @@ public class TransportFileMessageTest {
         byte[] metadata = "{}".getBytes();
         byte[] payload = randomBytes(1024);
         ByteBuf source = createValidPayloadMessageBuffer(metadata, payload);
-        TransportFileMessage msg = MessageFactory.createTransportFileMessageFromBuffer(source);
+        TransportFileMessage msg = (TransportFileMessage) MessageFactory.fromBuffer(source, MessageType.TRANSPORT_FILE);
         assertArrayEquals(metadata, msg.getMetaData().toJsonBytes());
         assertArrayEquals(payload, msg.getPayload());
-        assertEquals(msg.getType(), MessageFactory.TRANSPORT_FILE);
+        assertEquals(msg.getType(), MessageType.TRANSPORT_FILE);
         assertEquals(msg.getFlags().getFlags(), 13);
     }
 
@@ -46,7 +46,7 @@ public class TransportFileMessageTest {
         ByteBuf buf = Unpooled.buffer();
         msg.writeToNewBuffer(buf);
 
-        assertEquals(MessageFactory.TRANSPORT_FILE, buf.readShort());
+        assertEquals(MessageType.TRANSPORT_FILE.getType(), buf.readShort());
         assertEquals(17, buf.readByte());
         buf.readInt();
         byte[] newMetaData = new byte[metadata.toJsonBytes().length];
@@ -64,7 +64,7 @@ public class TransportFileMessageTest {
 
     private ByteBuf createValidPayloadMessageBuffer(byte[] metadata, byte[] payload) {
         ByteBuf buf = Unpooled.buffer();
-        buf.writeShort(MessageFactory.TRANSPORT_FILE);
+        buf.writeShort(MessageType.TRANSPORT_FILE.getType());
         buf.writeByte((byte) 13); // random byte to represent flags.
         buf.writeInt(metadata.length);
         buf.writeBytes(metadata);

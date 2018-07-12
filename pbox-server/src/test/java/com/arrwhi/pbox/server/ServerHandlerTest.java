@@ -52,11 +52,10 @@ public class ServerHandlerTest {
         verify(writer, times(1)).write(NAME, payload);
     }
 
-    private ByteBuf transportFileMessageWithPayload(byte[] payload, Flags flags) {
+    private TransportFileMessage transportFileMessageWithPayload(byte[] payload, Flags flags) {
         MetaData md = new MetaDataBuilder().withTo(NAME).build();
         TransportFileMessage m = new TransportFileMessage(md, payload);
         m.setFlags(flags);
-
-        return m.writeToNewBuffer();
+        return m;
     }
 }

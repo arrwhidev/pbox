@@ -1,5 +1,6 @@
 package com.arrwhi.pbox.msg;
 
+import com.arrwhi.pbox.exception.InvalidMessageTypeException;
 import com.arrwhi.pbox.msg.flags.Flags;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -12,21 +13,27 @@ import io.netty.buffer.Unpooled;
  */
 public abstract class Message {
     
-    private short type;
+    private MessageType type;
     private Flags flags;
 
-    public Message(short type) {
+    public Message(MessageType type) {
         this.type = type;
         this.flags = new Flags();
     }
     
     public void readFrom(ByteBuf src) {
-        type = src.readShort();
+        try {
+            type = MessageType.from(src.readShort());
+        } catch (InvalidMessageTypeException e) {
+            // refactor to remove this.
+            // it shouldn't happen.
+            e.printStackTrace();
+        }
         flags = new Flags(src.readByte());
     }
     
     public void writeToNewBuffer(ByteBuf dest) {
-        dest.writeShort(type);
+        dest.writeShort(type.getType());
         dest.writeByte(flags.getFlags());
     }
 
@@ -40,7 +47,7 @@ public abstract class Message {
         this.flags = flags;
     }
     
-    public short getType() { 
+    public MessageType getType() {
         return this.type; 
     }
 
@@ -50,6 +57,6 @@ public abstract class Message {
 
     @Override
     public String toString() {
-        return "Message is: " + MessageFactory.getMessageTypeAsString(type);
+        return "Message is: " + type;
     }
 }
